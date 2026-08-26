@@ -88,7 +88,10 @@ router.get('/', (req, res) => {
   const tb = path.join(config.downloadsDir, TEXTBOOK);
   res.json({
     chapters,
-    textbook: fs.existsSync(tb) ? { file: TEXTBOOK, title: 'C and C++ Under the Hood, 2nd ed.', url: `${config.publicBase}/api/downloads/${TEXTBOOK}` } : null,
+    textbook: fs.existsSync(tb) ? (() => {
+      const v = Math.floor(fs.statSync(tb).mtimeMs);            // cache-buster: URL changes when the PDF is re-synced
+      return { file: TEXTBOOK, title: 'C and C++ Under the Hood, 2nd ed.', url: `${config.publicBase}/api/materials/textbook?v=${v}`, downloadUrl: `${config.publicBase}/api/downloads/${TEXTBOOK}?v=${v}` };
+    })() : null,
     source: zipPath ? path.basename(zipPath) : null,
   });
 });
@@ -97,6 +100,18 @@ router.post('/_reindex', (req, res) => {
   if (req.user.role !== 'admin') return res.status(403).json({ error: 'forbidden' });
   buildIndex();
   res.json({ items: index.size, chapters: chapters.length });
+});
+
+/* The textbook is a 29 MB file on the PVC, not a zip member. Serve it INLINE
+   (res.sendFile gives Range/ETag so the viewer can jump pages) — the
+   /api/downloads route deliberately uses res.download → attachment. */
+router.get('/textbook', (req, res) => {
+  const abs = path.join(config.downloadsDir, TEXTBOOK);
+  if (!fs.existsSync(abs)) return res.status(404).json({ error: 'not_found' });
+  res.setHeader('Content-Disposition', `inline; filename="${TEXTBOOK}"`);
+  res.setHeader('Cache-Control', 'private, max-age=3600');
+  logger.info({ email: req.user.email, file: TEXTBOOK }, 'material');
+  res.sendFile(abs, { acceptRanges: true, headers: { 'Content-Type': 'application/pdf' } });
 });
 
 router.get('/:id', (req, res) => {

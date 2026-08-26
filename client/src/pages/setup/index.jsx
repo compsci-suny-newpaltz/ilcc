@@ -12,7 +12,7 @@ import { api, fmtBytes } from '../../lib/api';
 import useMe from '../../hooks/useMe';
 
 const BASE = import.meta.env.BASE_URL;
-const dlUrl = (file) => `${BASE}api/downloads/${file}`;
+const dlUrl = (file, sha) => `${BASE}api/downloads/${file}${sha ? `?v=${String(sha).slice(0, 8)}` : ''}`;   // sha in the URL busts stale browser caches
 
 const PLATFORMS = [
   { id: 'linux', label: 'Linux' },
@@ -100,7 +100,7 @@ function DownloadCard({ f, recommended, isSignedIn }) {
         )}
       </div>
       <div>
-        <a className={recommended ? ps.btnPrimary : ps.btn} href={dlUrl(f.file)}>
+        <a className={recommended ? ps.btnPrimary : ps.btn} href={dlUrl(f.file, f.sha256)}>
           <Download size={14} /> {isSignedIn ? 'Download' : 'Sign in to download'}
         </a>
       </div>

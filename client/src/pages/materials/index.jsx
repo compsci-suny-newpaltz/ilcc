@@ -25,7 +25,7 @@ export default function Materials() {
     if (!data) return [];
     const out = [];
     if (data.textbook) {
-      out.push({ id: TEXTBOOK_ID, title: data.textbook.title || 'Textbook', ext: 'pdf', url: data.textbook.url, textbook: true, chapter: null });
+      out.push({ id: TEXTBOOK_ID, title: data.textbook.title || 'Textbook', ext: 'pdf', url: data.textbook.url, downloadUrl: data.textbook.downloadUrl, textbook: true, chapter: null });
     }
     for (const ch of data.chapters || []) {
       for (const it of ch.items || []) {
@@ -73,6 +73,7 @@ export default function Materials() {
 
   const pageNum = parseInt(page, 10);
   const frameSrc = current ? (current.textbook && pageNum > 0 ? `${current.url}#page=${pageNum}` : current.url) : '';
+  const dlHref = current ? (current.downloadUrl || current.url) : '';
 
   const body = () => {
     if (err) return <div className={ps.card}><p className={ps.p}>Couldn't load materials: {err}</p></div>;
@@ -120,7 +121,7 @@ export default function Materials() {
                   </label>
                 )}
                 <a className={ps.btn} href={frameSrc} target="_blank" rel="noopener noreferrer"><ExternalLink size={14} /> Open in new tab</a>
-                <a className={ps.btn} href={current.url} download><Download size={14} /> Download</a>
+                <a className={ps.btn} href={dlHref} download><Download size={14} /> Download</a>
               </div>
               {current.ext === 'pdf' ? (
                 <iframe className={s.frame} src={frameSrc} title={current.title || current.name} />

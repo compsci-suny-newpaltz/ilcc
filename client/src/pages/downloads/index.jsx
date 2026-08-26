@@ -36,7 +36,7 @@ function Card({ d }) {
         <code className={ps.code}>{d.file}</code>{d.size != null && ` · ${fmtBytes(d.size)}`}
       </div>
       <div style={{ marginBottom: 10 }}><ShaButton sha={d.sha256} /></div>
-      <a className={ps.btnPrimary} href={`${BASE}api/downloads/${d.file}`} download><Download size={14} /> Download</a>
+      <a className={ps.btnPrimary} href={`${BASE}api/downloads/${d.file}${d.sha256 ? `?v=${d.sha256.slice(0, 8)}` : ''}`} download><Download size={14} /> Download</a>
     </div>
   );
 }
