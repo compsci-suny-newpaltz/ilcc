@@ -117,15 +117,18 @@ describe('autograder API (integration)', () => {
 });
 
 describe('zip ingest', () => {
-  it('parses Brightspace folders, drops macOS junk, prefers .a over .a.txt', () => {
+  it('parses Brightspace folders, drops macOS junk, keeps .a.txt as an attachment', () => {
     const { parseSubmissionsZip } = require('../src/services/submissions-zip');
     const buf = fs.readFileSync(path.join(__dirname, 'fixtures', 'submissions.zip'));
-    const students = parseSubmissionsZip(buf);
+    const { students } = parseSubmissionsZip(buf);
+    /* sorted by "Last, First"; .a files first, other files kept for the TA to view */
     expect(students.map(s => [s.displayName, s.orgDefinedId, s.files.map(f => f.name)])).toEqual([
+      ['Jane Doe', '12345', ['lab1.a', 'lab1.a.txt']],
       ['Bob Ray',  '67890', ['lab1.a']],
-      ['Jane Doe', '12345', ['lab1.a']],
     ]);
-    expect(students[1].files[0].content).toContain('mov r0, 1');
+    expect(students[0].files[0].content).toContain('mov r0, 1');
+    expect(students[0].files[0].questionNumber).toBe(1);
+    expect(students[0].files[1].questionNumber).toBeNull();
   });
 
   it('POST /parse-submissions + bulk import + grade-all round trip', async () => {
@@ -135,10 +138,13 @@ describe('zip ingest', () => {
       .attach('zip', path.join(__dirname, 'fixtures', 'submissions.zip'));
     expect(parsed.status).toBe(200);
     expect(parsed.body.students).toHaveLength(2);
+    expect(parsed.body.students[0].files[0].content).toBeUndefined();   // contents never leave the server on parse
 
+    /* Legacy bulk takes raw source strings; get them from the in-process parser. */
+    const { students } = require('../src/services/submissions-zip').parseSubmissionsZip(fs.readFileSync(path.join(__dirname, 'fixtures', 'submissions.zip')));
     const bulk = await post('/api/grader/submissions/bulk', {
       assignmentId: a.body.id,
-      students: parsed.body.students.map(s => ({ name: s.displayName, orgDefinedId: s.orgDefinedId, source: s.files[0].content })),
+      students: students.map(s => ({ name: s.displayName, orgDefinedId: s.orgDefinedId, source: s.files[0].content })),
     }, ADMIN);
     expect(bulk.status).toBe(201);
     expect(bulk.body.count).toBe(2);

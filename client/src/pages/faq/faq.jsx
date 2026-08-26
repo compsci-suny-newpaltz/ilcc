@@ -60,6 +60,14 @@ export const FAQ = [
     a: <>Sign in first. When an assignment is open, a <strong>Submit</strong> button appears in the editor; pick the assignment and submit. Past submissions and results are under <Link to="/my-submissions">My submissions</Link>.</>,
   },
   {
+    id: 'autograder-how', q: 'How does the autograder grade my program?', tags: ['autograder', 'grade', 'test', 'stdin', 'stdout', 'score'],
+    a: <>Each assignment has one <em>question</em> per program, and each question has test cases. For every case the grader runs your <C>.a</C> file with the case's stdin (one line per <C>din</C>/<C>sin</C>/<C>ain</C>) and compares what your program prints to the expected output, ignoring trailing whitespace. Your input is not echoed into the compared output. Each passing case earns its weight; your score is the sum over all questions. Test it yourself: run your program in the editor with the sample input from the assignment and check the output matches exactly — extra prompts, spaces or lines count as differences.</>,
+  },
+  {
+    id: 'autograder-filenames', q: 'How should I name my files for Brightspace?', tags: ['brightspace', 'filename', 'submit', 'autograder', 'naming'],
+    a: <>Submit one <C>.a</C> file per question and put the question number in the name: <C>&lt;anything&gt;q&lt;N&gt;.a</C>. All of these are detected: <C>lab4q5.a</C>, <C>ch3p12.a</C>, <C>Q17.a</C>, <C>3-5.a</C>, <C>lab4ex0305.a</C>. Other files (<C>.txt</C>, <C>.pdf</C>, <C>.docx</C> — written answers, LST dumps) are kept and viewable by your TA but not run. If you resubmit, the newest files win. Don't put two questions in one file — only one file can be graded per question.</>,
+  },
+  {
     id: 'textbook-slides', q: 'Where are the textbook and slides?', tags: ['textbook', 'slides', 'pdf', 'materials'],
     a: <>Sign in, then see <Link to="/materials">Materials</Link> for slides and <Link to="/downloads">Downloads</Link> for the textbook PDF and the software zip.</>,
   },

@@ -11,3 +11,7 @@ export const toLocalInput = (s) => {
   const p = (n) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
 };
+/* Full URL (incl. /ilcc base) for a submission file — used by <iframe>/<a href>. */
+export const fileUrl = (submissionId, fileId) => `${API}/grader/submissions/${submissionId}/files/${fileId}`;
+/* Extension of a file name, lowercase, no dot. */
+export const extOf = (name) => { const m = /\.([^.]+)$/.exec(name || ''); return m ? m[1].toLowerCase() : ''; };

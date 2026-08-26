@@ -7,6 +7,7 @@ import ps from '../../components/Page.module.css';
 import s from './autograder.module.css';
 import { api } from '../../lib/api';
 import { fmtDate } from './util';
+import HowItWorks from './HowItWorks';
 
 export default function Assignments() {
   const [rows, setRows] = useState(null);
@@ -24,6 +25,7 @@ export default function Assignments() {
 
   return (
     <Page title="Autograder" subtitle="Create assignments with test cases, collect submissions, grade them, and export to Brightspace." wide actions={newBtn}>
+      <HowItWorks />
       {err && <div className={s.error}>{err}</div>}
       {rows === null && !err && <div className={ps.empty}><span className={ps.spinner} /></div>}
       {rows && rows.length === 0 && (
@@ -32,7 +34,7 @@ export default function Assignments() {
             <GraduationCap size={32} style={{ opacity: 0.5 }} />
             <p className={ps.p}><strong>No assignments yet.</strong></p>
             <p className={`${ps.p} ${ps.muted}`}>
-              The flow: <b>1.</b> create an assignment with test cases (stdin → expected stdout) &nbsp;→&nbsp;
+              The flow: <b>1.</b> create an assignment with a question per program and test cases (stdin → expected stdout) &nbsp;→&nbsp;
               <b>2.</b> students submit from the editor, <i>or</i> you upload a Brightspace submissions zip &nbsp;→&nbsp;
               <b>3.</b> grade all &nbsp;→&nbsp; <b>4.</b> review, adjust scores, and export the CSV for Brightspace.
             </p>
@@ -44,7 +46,7 @@ export default function Assignments() {
         <div className={s.tableWrap}>
           <table className={ps.table}>
             <thead>
-              <tr><th>Title</th><th>Ch.</th><th>Due</th><th>Status</th><th>Cases</th><th>Submissions</th><th>Created by</th><th></th></tr>
+              <tr><th>Title</th><th>Ch.</th><th>Due</th><th>Status</th><th>Questions</th><th>Cases</th><th>Submissions</th><th>Created by</th><th></th></tr>
             </thead>
             <tbody>
               {rows.map((a) => (
@@ -53,6 +55,7 @@ export default function Assignments() {
                   <td>{a.chapter ?? '—'}</td>
                   <td className={ps.small}>{fmtDate(a.due_at)}</td>
                   <td><span className={`${ps.badge} ${a.is_open ? ps.badgeOk : ''}`}>{a.is_open ? 'open' : 'closed'}</span></td>
+                  <td>{a.question_count ?? '—'}</td>
                   <td>{a.test_case_count}</td>
                   <td>{a.submission_count}</td>
                   <td className={`${ps.small} ${ps.muted}`}>{a.created_by_email}</td>

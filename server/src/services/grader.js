@@ -89,11 +89,15 @@ function runTestCase(source, stdinText = '', { timeoutMs = config.graderTimeoutM
 
 const q = {
   submission: db.prepare('SELECT * FROM submissions WHERE id = ?'),
-  testCases:  db.prepare('SELECT * FROM test_cases WHERE assignment_id = ? ORDER BY ordinal, id'),
-  upsertResult: db.prepare(`INSERT INTO results (submission_id, test_case_id, actual_stdout, passed, diff_json, runtime_ms, error)
-    VALUES (@submission_id, @test_case_id, @actual_stdout, @passed, @diff_json, @runtime_ms, @error)
+  questions:  db.prepare('SELECT * FROM questions WHERE assignment_id = ? ORDER BY ordinal, number, id'),
+  testCases:  db.prepare('SELECT * FROM test_cases WHERE question_id = ? ORDER BY ordinal, id'),
+  /* Test cases with no question (pre-002 rows that somehow escaped the backfill). */
+  orphanCases: db.prepare('SELECT * FROM test_cases WHERE assignment_id = ? AND question_id IS NULL ORDER BY ordinal, id'),
+  mappedFile: db.prepare('SELECT id, content_text FROM submission_files WHERE submission_id = ? AND question_id = ? ORDER BY id LIMIT 1'),
+  upsertResult: db.prepare(`INSERT INTO results (submission_id, test_case_id, file_id, actual_stdout, passed, diff_json, runtime_ms, error)
+    VALUES (@submission_id, @test_case_id, @file_id, @actual_stdout, @passed, @diff_json, @runtime_ms, @error)
     ON CONFLICT(submission_id, test_case_id) DO UPDATE SET
-      actual_stdout = excluded.actual_stdout, passed = excluded.passed, diff_json = excluded.diff_json,
+      file_id = excluded.file_id, actual_stdout = excluded.actual_stdout, passed = excluded.passed, diff_json = excluded.diff_json,
       runtime_ms = excluded.runtime_ms, error = excluded.error`),
   existingGrade: db.prepare('SELECT graded_by_email FROM grades WHERE submission_id = ?'),
   upsertGrade: db.prepare(`INSERT INTO grades (submission_id, score, max_score, feedback, graded_by_email)
@@ -103,27 +107,49 @@ const q = {
   setStatus: db.prepare('UPDATE submissions SET status = ? WHERE id = ?'),
 };
 
+const NO_FILE = 'no file mapped to this question';
+
+/*
+ * Grade every question of the assignment. Each question is graded with the
+ * submission_file mapped to it; a question with no mapped file fails all of
+ * its cases with a clear error rather than being skipped, so max_score is
+ * the same for every student regardless of what they uploaded.
+ */
 async function gradeSubmission(submissionId) {
   const sub = q.submission.get(submissionId);
   if (!sub) throw Object.assign(new Error('submission not found'), { status: 404 });
-  const cases = q.testCases.all(sub.assignment_id);
 
-  let score = 0, max = 0, anyError = false;
+  /* [{ question, file, cases }] — orphan cases (no question) fall back to submissions.source. */
+  const units = q.questions.all(sub.assignment_id).map(question => ({
+    question, file: q.mappedFile.get(sub.id, question.id) ?? null, cases: q.testCases.all(question.id),
+  }));
+  const orphans = q.orphanCases.all(sub.assignment_id);
+  if (orphans.length) units.push({ question: null, file: { id: null, content_text: sub.source }, cases: orphans });
+
+  let score = 0, max = 0, anyError = false, nCases = 0;
   const results = [];
-  for (const tc of cases) {
-    const r = await runTestCase(sub.source, tc.stdin);
-    const passed = !r.error && !r.timedOut && normalize(r.stdout) === normalize(tc.expected_stdout);
-    const diff = passed ? [] : computeDiff(tc.expected_stdout, r.stdout);
-    if (r.error && !r.timedOut && /assembl|syntax/i.test(r.error)) anyError = true;
-    max += tc.weight;
-    if (passed) score += tc.weight;
-    const row = {
-      submission_id: sub.id, test_case_id: tc.id, actual_stdout: r.stdout, passed: passed ? 1 : 0,
-      diff_json: JSON.stringify(diff), runtime_ms: r.runtimeMs,
-      error: r.error ?? (r.inputExhausted ? 'program requested more input than the test provides' : null),
-    };
-    q.upsertResult.run(row);
-    results.push({ testCaseId: tc.id, name: tc.name, passed, weight: tc.weight, runtimeMs: r.runtimeMs, error: r.error, diff });
+  for (const { question, file, cases } of units) {
+    for (const tc of cases) {
+      nCases++;
+      max += tc.weight;
+      const r = file
+        ? await runTestCase(file.content_text ?? '', tc.stdin)
+        : { stdout: '', error: NO_FILE, runtimeMs: 0, timedOut: false, inputExhausted: false };
+      const passed = !r.error && !r.timedOut && normalize(r.stdout) === normalize(tc.expected_stdout);
+      const diff = passed ? [] : computeDiff(tc.expected_stdout, r.stdout);
+      if (r.error && !r.timedOut && /assembl|syntax/i.test(r.error)) anyError = true;
+      if (passed) score += tc.weight;
+      const row = {
+        submission_id: sub.id, test_case_id: tc.id, file_id: file?.id ?? null, actual_stdout: r.stdout, passed: passed ? 1 : 0,
+        diff_json: JSON.stringify(diff), runtime_ms: r.runtimeMs,
+        error: r.error ?? (r.inputExhausted ? 'program requested more input than the test provides' : null),
+      };
+      q.upsertResult.run(row);
+      results.push({
+        testCaseId: tc.id, questionId: question?.id ?? null, questionNumber: question?.number ?? null, fileId: file?.id ?? null,
+        name: tc.name, passed, weight: tc.weight, runtimeMs: r.runtimeMs, error: row.error, diff,
+      });
+    }
   }
 
   /* Don't clobber a manual grade. */
@@ -131,7 +157,7 @@ async function gradeSubmission(submissionId) {
   if (!existing || existing.graded_by_email === 'autograder') q.upsertGrade.run(sub.id, score, max);
   q.setStatus.run(anyError ? 'error' : 'graded', sub.id);
 
-  logger.info({ submissionId: sub.id, score, max, cases: cases.length }, 'graded');
+  logger.info({ submissionId: sub.id, score, max, cases: nCases }, 'graded');
   return { submissionId: sub.id, score, maxScore: max, results };
 }
 

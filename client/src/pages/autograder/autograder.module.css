@@ -84,3 +84,78 @@
   .students { max-height: 260px; }
   .tcRow, .formRow { grid-template-columns: 1fr; }
 }
+
+/* ---- v2: questions editor ---- */
+.question { margin-bottom: 12px; }
+.qHead { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.qNum { font-weight: 700; color: var(--text2); }
+.qHead input[type=number] { width: 64px; font-weight: 600; }
+.qHead input[type=text] { flex: 1; }
+.qCases { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding-left: 12px; border-left: 2px solid var(--border); }
+.tc { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg1); }
+
+/* ---- v2: mapping matrix ---- */
+.modalWide { max-width: 1100px; }
+.matrix td, .matrix th { vertical-align: middle; }
+.matrix th { white-space: nowrap; }
+.matrixName { font-weight: 600; }
+.matrixCell { min-width: 160px; }
+.matrixCell select { width: 100%; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; padding: 4px 6px; }
+.matrixCell .selectMissing { border-color: var(--red, #e5484d); }
+.matrixCell span[class*="badge"] { margin-top: 4px; }
+.matrixAtt { max-width: 260px; }
+.matrixAtt ul { margin-top: 2px; }
+.fileList li { display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.extBadge { display: inline-block; padding: 0 5px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 10.5px; font-weight: 600; text-transform: lowercase; line-height: 16px; }
+
+/* ---- v2: results table + student panel ---- */
+.results { width: 100%; }
+.results tbody tr { cursor: pointer; }
+.results tbody tr:hover { background: var(--bg3); }
+.results .rowActive { background: var(--bg3); box-shadow: inset 3px 0 0 var(--accent); }
+.results .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chips { display: inline-flex; gap: 3px; flex-wrap: wrap; }
+.chip { display: inline-block; min-width: 30px; padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; text-align: center; line-height: 16px; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); }
+.chipPass { color: var(--green, #30a46c); border-color: var(--green, #30a46c); background: color-mix(in srgb, var(--green, #30a46c) 12%, transparent); }
+.chipFail { color: var(--red, #e5484d); border-color: var(--red, #e5484d); background: color-mix(in srgb, var(--red, #e5484d) 12%, transparent); }
+.chipNone { opacity: 0.6; }
+
+.drawer { margin-top: 14px; border: 1px solid var(--accent); border-radius: 10px; background: var(--bg2); }
+.drawerHead { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+.drawerHead h3 { margin: 0; font-size: 15px; }
+.drawerNav { display: flex; gap: 4px; margin-left: auto; align-items: center; }
+.drawerBody { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 14px; padding: 12px 14px; align-items: start; }
+.fileTabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+.fileTab { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; margin-bottom: -1px; border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0; background: transparent; color: var(--text2); font: inherit; font-size: 12.5px; font-family: ui-monospace, Menlo, Consolas, monospace; cursor: pointer; max-width: 260px; }
+.fileTab > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fileTab:hover { color: var(--text); }
+.fileTabActive { background: var(--bg3); border-color: var(--border); color: var(--text); font-weight: 600; }
+.qBadge { display: inline-block; padding: 0 5px; border-radius: 4px; background: var(--accent); color: var(--accentText, #fff); font-size: 10.5px; font-weight: 700; line-height: 16px; font-family: inherit; }
+.viewerBar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; font-size: 12.5px; }
+.viewerBar select { width: auto; padding: 4px 8px; font-size: 12.5px; }
+.viewer { max-height: 60vh; }
+.frame { width: 100%; height: 70vh; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+.qResult { margin-bottom: 12px; }
+.qResultHead { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 0 6px; font-size: 13.5px; }
+.qResultHead strong { font-size: 14px; }
+.dl { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 32px; border: 1px dashed var(--border); border-radius: 8px; color: var(--text2); }
+
+/* ---- v2: how-it-works ---- */
+.howto { padding: 0; margin-bottom: 16px; overflow: hidden; }
+.howtoHead { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 14px; border: none; background: transparent; color: var(--text); font: inherit; font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
+.howtoHead:hover { background: var(--bg3); }
+.howtoBody { padding: 4px 16px 14px; border-top: 1px solid var(--border); }
+.steps { margin: 10px 0 0; padding-left: 22px; font-size: 13.5px; line-height: 1.6; columns: 2; column-gap: 28px; }
+.steps li { break-inside: avoid; margin-bottom: 4px; }
+.naming { margin-top: 12px; padding: 10px 14px; border-left: 3px solid var(--accent); border-radius: 6px; background: var(--bg1); }
+.namingTitle { font-weight: 600; font-size: 13.5px; margin-bottom: 4px; }
+.namingCols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.exList { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+
+@media (max-width: 1000px) {
+  .drawerBody { grid-template-columns: 1fr; }
+  .steps { columns: 1; }
+  .namingCols { grid-template-columns: 1fr; }
+}
+.fileLink { border: 1px solid var(--border); font: inherit; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--text); }
+.fileLink:hover { border-color: var(--accent); }
