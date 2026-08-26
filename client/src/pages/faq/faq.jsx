@@ -65,7 +65,7 @@ export const FAQ = [
   },
   {
     id: 'autograder-filenames', q: 'How should I name my files for Brightspace?', tags: ['brightspace', 'filename', 'submit', 'autograder', 'naming'],
-    a: <>Submit one <C>.a</C> file per question and put the question number in the name: <C>&lt;anything&gt;q&lt;N&gt;.a</C>. All of these are detected: <C>lab4q5.a</C>, <C>ch3p12.a</C>, <C>Q17.a</C>, <C>3-5.a</C>, <C>lab4ex0305.a</C>. Other files (<C>.txt</C>, <C>.pdf</C>, <C>.docx</C> — written answers, LST dumps) are kept and viewable by your TA but not run. If you resubmit, the newest files win. Don't put two questions in one file — only one file can be graded per question.</>,
+    a: <>Submit one file per question and put the question number in the name: <C>&lt;anything&gt;q&lt;N&gt;.&lt;ext&gt;</C> — any lab/chapter/homework prefix works: <C>lab7q3.a</C>, <C>ch5p12.a</C>, <C>Q1.a</C>, <C>2-4.c</C>, <C>hw3ex0206.a</C>. Every file type is kept and viewable by your TA (<C>.txt</C> <C>.pdf</C> <C>.docx</C> <C>.c</C> <C>.lst</C> <C>.e</C>…); only <C>.a</C> LCC programs are run automatically. If you resubmit, the newest files win. Don't put two questions in one file — only one file can be graded per question.</>,
   },
   {
     id: 'textbook-slides', q: 'Where are the textbook and slides?', tags: ['textbook', 'slides', 'pdf', 'materials'],

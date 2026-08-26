@@ -84,7 +84,10 @@ describe('Brightspace zip → import → grade → files', () => {
     expect(r.status).toBe(201);
     expect(r.body.count).toBe(26);
     expect(r.body.ids).toHaveLength(26);
-    expect(r.body.unmapped).toContainEqual({ student: ADLER, file: 'ch3p17.a' });
+    /* A TA's explicit 'attachment' choice is not a problem, so it's not reported; files the parser couldn't place are, with a reason. */
+    expect(r.body.unmapped).not.toContainEqual(expect.objectContaining({ student: ADLER, file: 'ch3p17.a' }));
+    expect(r.body.unmapped.length).toBeGreaterThan(0);
+    expect(r.body.unmapped.every(u => typeof u.reason === 'string' && u.file.endsWith('.a'))).toBe(true);
 
     const g = await post(`/api/grader/assignments/${aid}/grade-all`, {}, ADMIN);
     expect(g.body).toMatchObject({ graded: 26, errors: 0, total: 26 });

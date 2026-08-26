@@ -129,7 +129,7 @@ function parseSubmissionsZip(buffer) {
       content: isText ? cleanText(data) : null,
       blob: isText ? null : data,
       submittedAt: when,
-      questionNumber: ext === 'a' ? questionNumber(file) : null,
+      questionNumber: questionNumber(file),   // any type — a lab may collect .c/.lst/.pdf per question
       _folderWhen: when || '',
     };
     /* Same basename from two folders (resubmit) → keep the newer folder's copy. */

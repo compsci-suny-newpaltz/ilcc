@@ -281,7 +281,7 @@ function StudentPanel({ row, questions, pos, onPrev, onNext, onClose, onRegrade,
                   <div className={s.viewerBar}>
                     {file.ext === 'a' ? <FileText size={14} className={ps.muted} /> : <Paperclip size={14} className={ps.muted} />}
                     <span className={ps.muted}>{file.mime || ''}{file.size != null ? ` · ${file.size.toLocaleString()} B` : ''}</span>
-                    {file.ext === 'a' && (
+                    {(
                       <label className={ps.small} style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                         Map to
                         <select className={ps.select} value={file.question_id ?? ''} disabled={mapping} onChange={(e) => remap(e.target.value === '' ? null : Number(e.target.value))}>
@@ -291,7 +291,7 @@ function StudentPanel({ row, questions, pos, onPrev, onNext, onClose, onRegrade,
                         {mapping && <span className={ps.spinner} />}
                       </label>
                     )}
-                    <a className={ps.btn} href={fileUrl(row.submission_id, file.id)} download={file.name} style={{ padding: '3px 8px', marginLeft: file.ext === 'a' ? 0 : 'auto' }}><Download size={12} /> Download</a>
+                    <a className={ps.btn} href={fileUrl(row.submission_id, file.id)} download={file.name} style={{ padding: '3px 8px', marginLeft: 0 }}><Download size={12} /> Download</a>
                   </div>
                   {mapErr && <div className={s.error}>{mapErr}</div>}
                   <FileViewer key={file.id} submissionId={row.submission_id} file={file} />

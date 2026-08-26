@@ -11,10 +11,10 @@ const C = ({ children }) => <code className={ps.code}>{children}</code>;
 
 const STEPS = [
   ['Create an assignment', <>Title, chapter, due date. Toggle <i>Open for submissions</i> to let students submit from the editor.</>],
-  ['Add a question per graded program', <>The question <b>number</b> is what students put in their filenames — question 5 ⇒ <C>lab4q5.a</C>. One program per question.</>],
+  ['Add a question per graded program', <>The question <b>number</b> is what students put in their filenames — question 3 ⇒ <C>lab7q3.a</C>, <C>hw2p3.a</C>, <C>q3.a</C>… One file per question; questions with no test cases are graded by hand.</>],
   ['Add test cases to each question', <>Each case has <b>stdin</b> (one line per <C>din</C>/<C>sin</C>/<C>ain</C>) and the <b>expected stdout</b>. Tip: run your reference solution in the editor with that input and paste its output.</>],
   ['Collect submissions', <>Brightspace → Assignments → the assignment → <b>Download all submissions</b>. On the grade page click <b>Upload zip</b>.</>],
-  ['Check the mapping matrix', <>Rows are students, columns are questions. Each cell shows which <C>.a</C> file will be graded for that question — fix any <span className={`${ps.badge} ${ps.badgeWarn}`}>guessed</span> or <span className={`${ps.badge} ${ps.badgeErr}`}>missing</span> cell, then <b>Import</b>.</>],
+  ['Check the mapping matrix', <>Rows are students, columns are questions. Each cell shows which file will be graded for that question (any type — <C>.a</C> is run, others are viewed and graded by hand) — fix any <span className={`${ps.badge} ${ps.badgeWarn}`}>guessed</span> or <span className={`${ps.badge} ${ps.badgeErr}`}>missing</span> cell, then <b>Import</b>.</>],
   ['Grade all', <>Runs every question's test cases against the mapped file for every student. Score = sum of the weights of passed cases across all questions.</>],
   ['Review', <>Click a student to see every file they submitted, per-question results with an expected/actual diff, remap a file to another question, re-grade, or override the score and add feedback.</>],
   ['Export', <><b>Export CSV</b> → Brightspace → Grades → Import. The CSV uses OrgDefinedId so it lines up with the gradebook.</>],
@@ -42,18 +42,18 @@ export default function HowItWorks() {
           <div className={s.naming}>
             <div className={s.namingTitle}>File naming for students</div>
             <p className={`${ps.p} ${ps.small}`} style={{ marginBottom: 8 }}>
-              Programs must be <C>.a</C> files whose name contains the question number: <C>&lt;anything&gt;q&lt;N&gt;.a</C>.
+              Name each file with its question number: <C>&lt;anything&gt;q&lt;N&gt;.&lt;ext&gt;</C>. Works for any lab, chapter or homework prefix and any file type.
             </p>
             <div className={s.namingCols}>
               <div>
                 <div className={`${ps.small} ${ps.muted}`}>Detected automatically</div>
                 <div className={s.exList}>
-                  {['lab4q5.a', 'ch3p12.a', 'Q17.a', '3-5.a', 'lab4ex0305.a'].map((n) => <C key={n}>{n}</C>)}
+                  {['lab7q3.a', 'ch5p12.a', 'Q1.a', '2-4.c', 'hw3ex0206.a', 'labtwo_q1.lst'].map((n) => <C key={n}>{n}</C>)}
                 </div>
               </div>
               <div>
-                <div className={`${ps.small} ${ps.muted}`}>Not graded, but viewable in the student panel</div>
-                <div className={s.exList}>{['.txt', '.pdf', '.docx'].map((n) => <C key={n}>{n}</C>)}</div>
+                <div className={`${ps.small} ${ps.muted}`}>Kept and viewable (only <C>.a</C> is run by the autograder)</div>
+                <div className={s.exList}>{['.txt', '.pdf', '.docx', '.c', '.lst', '.e', '.bin'].map((n) => <C key={n}>{n}</C>)}</div>
               </div>
             </div>
             <p className={`${ps.p} ${ps.small} ${ps.muted}`} style={{ margin: '8px 0 0' }}>

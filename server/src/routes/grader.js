@@ -272,7 +272,10 @@ router.post('/submissions/import', upload.single('zip'), (req, res, next) => {
       const files = s.files.map(f => {
         const number = Object.prototype.hasOwnProperty.call(override, f.name) ? override[f.name] : f.questionNumber;
         const questionId = questionIdFor(questions, number);
-        if (f.ext === 'a' && questionId == null) unmapped.push({ student: key, file: f.name });
+        if (questionId == null && f.ext === 'a' && !Object.prototype.hasOwnProperty.call(override, f.name)) {   // a TA's explicit 'attachment' isn't a problem
+          if (number != null) unmapped.push({ student: key, file: f.name, reason: `looks like question ${number}, but this assignment has no question ${number}` });
+          else if (f.ext === 'a') unmapped.push({ student: key, file: f.name, reason: 'no question number in the filename' });
+        }
         return { name: f.name, ext: f.ext, mime: f.mime, size: f.size, isText: f.isText, content: f.content, blob: f.blob,
           submittedAt: f.submittedAt, questionId, mappedBy: Object.prototype.hasOwnProperty.call(override, f.name) ? 'ta' : 'auto' };
       });

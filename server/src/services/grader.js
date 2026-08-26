@@ -93,7 +93,7 @@ const q = {
   testCases:  db.prepare('SELECT * FROM test_cases WHERE question_id = ? ORDER BY ordinal, id'),
   /* Test cases with no question (pre-002 rows that somehow escaped the backfill). */
   orphanCases: db.prepare('SELECT * FROM test_cases WHERE assignment_id = ? AND question_id IS NULL ORDER BY ordinal, id'),
-  mappedFile: db.prepare('SELECT id, content_text FROM submission_files WHERE submission_id = ? AND question_id = ? ORDER BY id LIMIT 1'),
+  mappedFile: db.prepare('SELECT id, ext, is_text, content_text FROM submission_files WHERE submission_id = ? AND question_id = ? ORDER BY id LIMIT 1'),
   upsertResult: db.prepare(`INSERT INTO results (submission_id, test_case_id, file_id, actual_stdout, passed, diff_json, runtime_ms, error)
     VALUES (@submission_id, @test_case_id, @file_id, @actual_stdout, @passed, @diff_json, @runtime_ms, @error)
     ON CONFLICT(submission_id, test_case_id) DO UPDATE SET
@@ -108,6 +108,7 @@ const q = {
 };
 
 const NO_FILE = 'no file mapped to this question';
+const notRunnable = (f) => (f.ext !== 'a' || !f.is_text) ? `mapped file is .${f.ext || '?'} — only .a LCC source can be run (grade this question manually)` : null;
 
 /*
  * Grade every question of the assignment. Each question is graded with the
@@ -133,7 +134,7 @@ async function gradeSubmission(submissionId) {
       nCases++;
       max += tc.weight;
       const r = file
-        ? await runTestCase(file.content_text ?? '', tc.stdin)
+        ? (file.id != null && notRunnable(file) ? { stdout: '', error: notRunnable(file), runtimeMs: 0 } : await runTestCase(file.content_text ?? '', tc.stdin))
         : { stdout: '', error: NO_FILE, runtimeMs: 0, timedOut: false, inputExhausted: false };
       const passed = !r.error && !r.timedOut && normalize(r.stdout) === normalize(tc.expected_stdout);
       const diff = passed ? [] : computeDiff(tc.expected_stdout, r.stdout);
