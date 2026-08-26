@@ -105,6 +105,15 @@ router.post('/_reindex', (req, res) => {
 /* The textbook is a 29 MB file on the PVC, not a zip member. Serve it INLINE
    (res.sendFile gives Range/ETag so the viewer can jump pages) — the
    /api/downloads route deliberately uses res.download → attachment. */
+/* Table of contents + page-label segments, built by scripts/build-textbook-pdf.py
+   and synced next to the PDF as cuh-2e.toc.json. */
+router.get('/textbook/toc', (req, res) => {
+  const p = path.join(config.downloadsDir, 'cuh-2e.toc.json');
+  if (!fs.existsSync(p)) return res.status(404).json({ error: 'not_found' });
+  res.setHeader('Cache-Control', 'private, max-age=3600');
+  res.type('json').send(fs.readFileSync(p, 'utf8'));
+});
+
 router.get('/textbook', (req, res) => {
   const abs = path.join(config.downloadsDir, TEXTBOOK);
   if (!fs.existsSync(abs)) return res.status(404).json({ error: 'not_found' });

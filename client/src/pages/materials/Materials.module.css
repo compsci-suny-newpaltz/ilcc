@@ -19,3 +19,15 @@
   .mobileSelect { display: block; }
   .frame { height: 70vh; }
 }
+
+/* Textbook table of contents (from cuh-2e.toc.json) */
+.toc, .tocSections { list-style: none; margin: 4px 0 0; padding: 0; }
+.tocRow { display: flex; align-items: stretch; }
+.tocChapter, .tocSection { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; padding: 4px 8px; border: none; border-radius: 6px; background: transparent; color: var(--text); font: inherit; font-size: 12.5px; text-align: left; cursor: pointer; }
+.tocChapter:hover, .tocSection:hover { background: var(--bg3); }
+.tocSection { padding-left: 26px; font-size: 12px; color: var(--muted); }
+.tocSection:disabled { opacity: .5; cursor: default; }
+.tocNum { min-width: 18px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tocPage { margin-left: auto; padding-left: 6px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.tocToggle { border: none; background: transparent; color: var(--muted); padding: 0 6px; cursor: pointer; border-radius: 6px; }
+.tocToggle:hover { background: var(--bg3); }

@@ -1,0 +1,863 @@
+{
+ "source": "OCR of the printed table of contents",
+ "pageLabels": {
+  "roman": [
+   1,
+   9
+  ],
+  "segments": [
+   [
+    10,
+    1
+   ],
+   [
+    71,
+    64
+   ],
+   [
+    181,
+    176
+   ]
+  ]
+ },
+ "chapters": [
+  {
+   "chapter": 0,
+   "title": "Preface",
+   "page": "iii",
+   "pdfPage": 3,
+   "sections": []
+  },
+  {
+   "chapter": 1,
+   "title": "Number Systems",
+   "note": null,
+   "sections": [
+    {
+     "title": "Decimal, Binary, Hexadecimal",
+     "page": 1,
+     "pdfPage": 10
+    },
+    {
+     "title": "Numbering Bits",
+     "page": 3,
+     "pdfPage": 12
+    },
+    {
+     "title": "Adding Positional Numbers",
+     "page": 3,
+     "pdfPage": 12
+    },
+    {
+     "title": "Representing Negative Numbers",
+     "page": 4,
+     "pdfPage": 13
+    },
+    {
+     "title": "Signed and Unsigned Numbers",
+     "page": 6,
+     "pdfPage": 15
+    },
+    {
+     "title": "Range of Signed and Unsigned Numbers",
+     "page": 6,
+     "pdfPage": 15
+    },
+    {
+     "title": "Converting between Binary and Hex",
+     "page": 8,
+     "pdfPage": 17
+    },
+    {
+     "title": "Converting Decimal to Binary",
+     "page": 9,
+     "pdfPage": 18
+    },
+    {
+     "title": "Zero and Sign Extension",
+     "page": 10,
+     "pdfPage": 19
+    },
+    {
+     "title": "Exclusive OR and NOR Gates",
+     "page": 11,
+     "pdfPage": 20
+    },
+    {
+     "title": "Addition and Subtraction",
+     "page": 12,
+     "pdfPage": 21
+    },
+    {
+     "title": "Signed Overflow",
+     "page": 14,
+     "pdfPage": 23
+    },
+    {
+     "title": "Unsigned Overflow",
+     "page": 16,
+     "pdfPage": 25
+    },
+    {
+     "title": "Floating Point",
+     "page": 18,
+     "pdfPage": 27
+    },
+    {
+     "title": "Problems",
+     "page": 22,
+     "pdfPage": 31
+    }
+   ],
+   "page": 1,
+   "pdfPage": 10
+  },
+  {
+   "chapter": 2,
+   "title": "Machine Language",
+   "note": null,
+   "sections": [
+    {
+     "title": "Introduction",
+     "page": 24,
+     "pdfPage": 33
+    },
+    {
+     "title": "Structure of the LCC",
+     "page": 24,
+     "pdfPage": 33
+    },
+    {
+     "title": "Second Type of Add Instruction",
+     "page": 32,
+     "pdfPage": 41
+    },
+    {
+     "title": "Store Instruction",
+     "page": 33,
+     "pdfPage": 42
+    },
+    {
+     "title": "Move Immediate Instruction",
+     "page": 34,
+     "pdfPage": 43
+    },
+    {
+     "title": "And Instruction",
+     "page": 34,
+     "pdfPage": 43
+    },
+    {
+     "title": "Not Instruction",
+     "page": 35,
+     "pdfPage": 44
+    },
+    {
+     "title": "Load Effective Address Instruction",
+     "page": 36,
+     "pdfPage": 45
+    },
+    {
+     "title": "Strings",
+     "page": 37,
+     "pdfPage": 46
+    },
+    {
+     "title": "Trap Instructions",
+     "page": 38,
+     "pdfPage": 47
+    },
+    {
+     "title": "Problems",
+     "page": 40,
+     "pdfPage": 49
+    }
+   ],
+   "page": 24,
+   "pdfPage": 33
+  },
+  {
+   "chapter": 3,
+   "title": "Assembly Language",
+   "note": null,
+   "sections": [
+    {
+     "title": "Introduction",
+     "page": 42,
+     "pdfPage": 51
+    },
+    {
+     "title": "Sub Instruction",
+     "page": 45,
+     "pdfPage": 54
+    },
+    {
+     "title": ".Zero and .String Directives",
+     "page": 45,
+     "pdfPage": 54
+    },
+    {
+     "title": "Mvr and Mov-Instructions",
+     "page": 47,
+     "pdfPage": 56
+    },
+    {
+     "title": "Default Registers",
+     "page": 47,
+     "pdfPage": 56
+    },
+    {
+     "title": "Branch Instructions and Loops",
+     "page": 48,
+     "pdfPage": 57
+    },
+    {
+     "title": "Calling Subroutines",
+     "page": 50,
+     "pdfPage": 59
+    },
+    {
+     "title": "Header in Executable File",
+     "page": 51,
+     "pdfPage": 60
+    },
+    {
+     "title": "Dereferencing Pointers",
+     "page": 55,
+     "pdfPage": 64
+    },
+    {
+     "title": "Accessing the Stack",
+     "page": 58,
+     "pdfPage": 67
+    },
+    {
+     "title": "Comparing Numbers",
+     "page": 59,
+     "pdfPage": 68
+    },
+    {
+     "title": "Assembly Process",
+     "page": 63,
+     "pdfPage": 70
+    },
+    {
+     "title": "Label Offsets and the Current Location Marker",
+     "page": 65,
+     "pdfPage": 72
+    },
+    {
+     "title": "More Instructions and Directives on the LCC",
+     "page": 65,
+     "pdfPage": 72
+    },
+    {
+     "title": "Using the Symbolic Debugger",
+     "page": 68,
+     "pdfPage": 75
+    },
+    {
+     "title": "Problems",
+     "page": 68,
+     "pdfPage": 75
+    }
+   ],
+   "page": 42,
+   "pdfPage": 51
+  },
+  {
+   "chapter": 4,
+   "title": "Function Calls and Returns",
+   "note": null,
+   "sections": [
+    {
+     "title": "Introduction",
+     "page": 72,
+     "pdfPage": 79
+    },
+    {
+     "title": "Compiling Like a Non-optimizing Compiler",
+     "page": 72,
+     "pdfPage": 79
+    },
+    {
+     "title": "Calling a Function",
+     "page": 74,
+     "pdfPage": 81
+    },
+    {
+     "title": "Returning a Value",
+     "page": 78,
+     "pdfPage": 85
+    },
+    {
+     "title": "Problems",
+     "page": 79,
+     "pdfPage": 86
+    }
+   ],
+   "page": 72,
+   "pdfPage": 79
+  },
+  {
+   "chapter": 5,
+   "title": "Global, Dynamic Local, and Static Local Variables",
+   "note": null,
+   "sections": [
+    {
+     "title": "Global Variables",
+     "page": 80,
+     "pdfPage": 87
+    },
+    {
+     "title": "Dynamic Local Variables",
+     "page": 81,
+     "pdfPage": 88
+    },
+    {
+     "title": "Static Local Variables",
+     "page": 84,
+     "pdfPage": 91
+    },
+    {
+     "title": "Problems",
+     "page": 88,
+     "pdfPage": 95
+    }
+   ],
+   "page": 80,
+   "pdfPage": 87
+  },
+  {
+   "chapter": 6,
+   "title": "Decisions, Loops, and Recursion",
+   "note": null,
+   "sections": [
+    {
+     "title": "Decisions",
+     "page": 89,
+     "pdfPage": 96
+    },
+    {
+     "title": "Loops",
+     "page": 90,
+     "pdfPage": 97
+    },
+    {
+     "title": "Recursion",
+     "page": 92,
+     "pdfPage": 99
+    },
+    {
+     "title": "Problems",
+     "page": 99,
+     "pdfPage": 106
+    }
+   ],
+   "page": 89,
+   "pdfPage": 96
+  },
+  {
+   "chapter": 7,
+   "title": "Pointers",
+   "note": null,
+   "sections": [
+    {
+     "title": "Pointers in C",
+     "page": 100,
+     "pdfPage": 107
+    },
+    {
+     "title": "Pointers to Global Variables",
+     "page": 102,
+     "pdfPage": 109
+    },
+    {
+     "title": "Pointers to Dynamic Local Variables",
+     "page": 103,
+     "pdfPage": 110
+    },
+    {
+     "title": "Pointers to Functions",
+     "page": 105,
+     "pdfPage": 112
+    },
+    {
+     "title": "Problems",
+     "page": 108,
+     "pdfPage": 115
+    }
+   ],
+   "page": 100,
+   "pdfPage": 107
+  },
+  {
+   "chapter": 8,
+   "title": "Parameter Passing",
+   "note": null,
+   "sections": [
+    {
+     "title": "Pass by Value",
+     "page": 110,
+     "pdfPage": 117
+    },
+    {
+     "title": "Pass by Address",
+     "page": 112,
+     "pdfPage": 119
+    },
+    {
+     "title": "Pass by Value-Result",
+     "page": 115,
+     "pdfPage": 122
+    },
+    {
+     "title": "Pass by Name",
+     "page": 117,
+     "pdfPage": 124
+    },
+    {
+     "title": "Variable-length Argument Lists",
+     "page": 123,
+     "pdfPage": 130
+    },
+    {
+     "title": "Problems",
+     "page": 127,
+     "pdfPage": 134
+    }
+   ],
+   "page": 110,
+   "pdfPage": 117
+  },
+  {
+   "chapter": 9,
+   "title": "Structs",
+   "note": null,
+   "sections": [
+    {
+     "title": "Creating and Accessing Structs",
+     "page": 129,
+     "pdfPage": 136
+    },
+    {
+     "title": "Dynamically Allocating Structs",
+     "page": 131,
+     "pdfPage": 138
+    },
+    {
+     "title": "Passing Structs",
+     "page": 133,
+     "pdfPage": 140
+    },
+    {
+     "title": "Problems",
+     "page": 137,
+     "pdfPage": 144
+    }
+   ],
+   "page": 129,
+   "pdfPage": 136
+  },
+  {
+   "chapter": 10,
+   "title": "Arrays",
+   "note": null,
+   "sections": [
+    {
+     "title": "Declaring Arrays",
+     "page": 138,
+     "pdfPage": 145
+    },
+    {
+     "title": "Indexing",
+     "page": 139,
+     "pdfPage": 146
+    },
+    {
+     "title": "Name of an Array is a Pointer",
+     "page": 141,
+     "pdfPage": 148
+    },
+    {
+     "title": "Passing an Array in a Function Call",
+     "page": 143,
+     "pdfPage": 150
+    },
+    {
+     "title": "Strings",
+     "page": 145,
+     "pdfPage": 152
+    },
+    {
+     "title": "Problems",
+     "page": 152,
+     "pdfPage": 159
+    }
+   ],
+   "page": 138,
+   "pdfPage": 145
+  },
+  {
+   "chapter": 11,
+   "title": "Multiplication and Division",
+   "note": null,
+   "sections": [
+    {
+     "title": "Multiplication",
+     "page": 154,
+     "pdfPage": 161
+    },
+    {
+     "title": "Division",
+     "page": 158,
+     "pdfPage": 165
+    },
+    {
+     "title": "Problems",
+     "page": 159,
+     "pdfPage": 166
+    }
+   ],
+   "page": 154,
+   "pdfPage": 161
+  },
+  {
+   "chapter": 12,
+   "title": "Linking",
+   "note": null,
+   "sections": [
+    {
+     "title": "Separate Assembly",
+     "page": 161,
+     "pdfPage": 168
+    },
+    {
+     "title": "Requirements for Linking",
+     "page": 162,
+     "pdfPage": 169
+    },
+    {
+     "title": "Overview of the Linking Process",
+     "page": 164,
+     "pdfPage": 171
+    },
+    {
+     "title": "Linking Process in Detail",
+     "page": 165,
+     "pdfPage": 172
+    },
+    {
+     "title": "Startup Code",
+     "page": 170,
+     "pdfPage": 177
+    },
+    {
+     "title": "Separately-Compiled C Modules",
+     "page": 176,
+     "pdfPage": 181
+    },
+    {
+     "title": "Problems",
+     "page": 179,
+     "pdfPage": 184
+    }
+   ],
+   "page": 161,
+   "pdfPage": 168
+  },
+  {
+   "chapter": 13,
+   "title": "Function Name Overloading in C++",
+   "note": null,
+   "sections": [
+    {
+     "title": "Encoding the Parameter List",
+     "page": 182,
+     "pdfPage": 187
+    },
+    {
+     "title": "Problems",
+     "page": 185,
+     "pdfPage": 190
+    }
+   ],
+   "page": 182,
+   "pdfPage": 187
+  },
+  {
+   "chapter": 14,
+   "title": "Reference Parameters and Variables in C++",
+   "note": null,
+   "sections": [
+    {
+     "title": "Reference Parameters",
+     "page": 187,
+     "pdfPage": 192
+    },
+    {
+     "title": "Reference Variables",
+     "page": 190,
+     "pdfPage": 195
+    },
+    {
+     "title": "Problem",
+     "page": 191,
+     "pdfPage": 196
+    }
+   ],
+   "page": 187,
+   "pdfPage": 192
+  },
+  {
+   "chapter": 15,
+   "title": "C++ Objects",
+   "note": null,
+   "sections": [
+    {
+     "title": "Introduction",
+     "page": 192,
+     "pdfPage": 197
+    },
+    {
+     "title": "Structs Versus Objects",
+     "page": 193,
+     "pdfPage": 198
+    },
+    {
+     "title": "Creating Structs with malloc and Objects with new",
+     "page": 203,
+     "pdfPage": 208
+    },
+    {
+     "title": "Problems",
+     "page": 206,
+     "pdfPage": 211
+    }
+   ],
+   "page": 192,
+   "pdfPage": 197
+  },
+  {
+   "chapter": 16,
+   "title": "C++ Inheritance and Virtual Functions",
+   "note": null,
+   "sections": [
+    {
+     "title": "Inheritance",
+     "page": 207,
+     "pdfPage": 212
+    },
+    {
+     "title": "Virtual Functions",
+     "page": 214,
+     "pdfPage": 219
+    },
+    {
+     "title": "Constructors",
+     "page": 222,
+     "pdfPage": 227
+    },
+    {
+     "title": "Problems",
+     "page": 229,
+     "pdfPage": 234
+    }
+   ],
+   "page": 207,
+   "pdfPage": 212
+  },
+  {
+   "chapter": 17,
+   "title": "Microlevel of LCC",
+   "note": null,
+   "sections": [
+    {
+     "title": "Introduction",
+     "page": 230,
+     "pdfPage": 235
+    },
+    {
+     "title": "Data Path",
+     "page": 230,
+     "pdfPage": 235
+    },
+    {
+     "title": "Main Memory Interface",
+     "page": 231,
+     "pdfPage": 236
+    },
+    {
+     "title": "Specifying the ALU Operation",
+     "page": 232,
+     "pdfPage": 237
+    },
+    {
+     "title": "Complete Microlevel Structure of the LCC",
+     "page": 232,
+     "pdfPage": 237
+    },
+    {
+     "title": "Binary and Symbolic Microinstructions",
+     "page": 234,
+     "pdfPage": 239
+    },
+    {
+     "title": "Implementing the Tiny Instruction Set",
+     "page": 235,
+     "pdfPage": 240
+    },
+    {
+     "title": "Evaluation of the Instruction Set Architecture of the LCC",
+     "page": 237,
+     "pdfPage": 242
+    },
+    {
+     "title": "Problems",
+     "page": 239,
+     "pdfPage": 244
+    }
+   ],
+   "page": 230,
+   "pdfPage": 235
+  },
+  {
+   "chapter": 18,
+   "title": "System Programming Projects",
+   "note": null,
+   "sections": [
+    {
+     "title": "System Programming",
+     "page": 243,
+     "pdfPage": 248
+    },
+    {
+     "title": "Reading a Binary File in C on a Windows System",
+     "page": 243,
+     "pdfPage": 248
+    },
+    {
+     "title": "Reading and Writing Binary Files",
+     "page": 244,
+     "pdfPage": 249
+    },
+    {
+     "title": "Input and Output Functions in C for Text Files",
+     "page": 246,
+     "pdfPage": 251
+    },
+    {
+     "title": "Little Endian and Big Endian",
+     "page": 247,
+     "pdfPage": 252
+    },
+    {
+     "title": "Using Masks and Bitwise Operators",
+     "page": 248,
+     "pdfPage": 253
+    },
+    {
+     "title": "Accessing Command Line Arguments",
+     "page": 249,
+     "pdfPage": 254
+    },
+    {
+     "title": "Common Bugs in C Programs",
+     "page": 250,
+     "pdfPage": 255
+    },
+    {
+     "title": "Field Width in printf Conversion Codes",
+     "page": 252,
+     "pdfPage": 257
+    },
+    {
+     "title": "Displaying a Byte in Hex",
+     "page": 253,
+     "pdfPage": 258
+    },
+    {
+     "title": "Hex/ASCII Display Project",
+     "page": 254,
+     "pdfPage": 259
+    },
+    {
+     "title": "Machine Interpreter Level 1 Project",
+     "page": 258,
+     "pdfPage": 263
+    },
+    {
+     "title": "Assembler Level 1 Project",
+     "page": 262,
+     "pdfPage": 267
+    },
+    {
+     "title": "Machine Interpreter Level 2 Project",
+     "page": 266,
+     "pdfPage": 271
+    },
+    {
+     "title": "Assembler Level 2 Project",
+     "page": 267,
+     "pdfPage": 272
+    },
+    {
+     "title": "Module Picture Project",
+     "page": 267,
+     "pdfPage": 272
+    },
+    {
+     "title": "Linker Project",
+     "page": 269,
+     "pdfPage": 274
+    },
+    {
+     "title": "More System Programming Projects",
+     "page": 273,
+     "pdfPage": 278
+    },
+    {
+     "title": "Epilog",
+     "page": 273,
+     "pdfPage": 278
+    }
+   ],
+   "page": 243,
+   "pdfPage": 248
+  },
+  {
+   "chapter": 19,
+   "title": "Virtual Memory",
+   "note": "Chapter19VirtualMemory.pdf in software package",
+   "sections": [
+    {
+     "title": "Appendix A: ASCII",
+     "page": 274
+    },
+    {
+     "title": "Appendix B: LCC Instruction Set Summary",
+     "page": 275
+    },
+    {
+     "title": "Index",
+     "page": 277
+    }
+   ],
+   "external": "Chapter19VirtualMemory.pdf"
+  },
+  {
+   "chapter": null,
+   "title": "Appendix A: ASCII",
+   "page": 274,
+   "pdfPage": 279,
+   "sections": []
+  },
+  {
+   "chapter": null,
+   "title": "Index",
+   "page": 275,
+   "pdfPage": 280,
+   "sections": []
+  }
+ ]
+}

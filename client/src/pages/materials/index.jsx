@@ -1,6 +1,6 @@
 /* Materials — slides & textbook viewer. */
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { ExternalLink, Download, FileText, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ExternalLink, Download, FileText, BookOpen, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import Page from '../../components/Page';
 import ps from '../../components/Page.module.css';
 import { api, fmtBytes } from '../../lib/api';
@@ -14,11 +14,28 @@ export default function Materials() {
   const [data, setData] = useState(null);
   const [err, setErr] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
-  const [page, setPage] = useState('');
+  const [page, setPage] = useState('');          // what the user typed: the PRINTED page number
+  const [pdfPage, setPdfPage] = useState(0);      // what the iframe gets (#page=)
+  const [toc, setToc] = useState(null);
+  const [openCh, setOpenCh] = useState(null);
 
   useEffect(() => {
-    api('/materials').then(setData).catch((e) => setErr(e.message));
+    api('/materials').then((d) => { setData(d); if (d.textbook) api('/materials/textbook/toc').then(setToc).catch(() => setToc(null)); }).catch((e) => setErr(e.message));
   }, []);
+
+  /* Printed page → PDF page. The scan is missing a few leaves, so the offset
+     changes; toc.pageLabels.segments = [[pdfStart, printedStart], …]. */
+  const toPdfPage = useCallback((printed) => {
+    if (!(printed > 0)) return 0;
+    const segs = toc?.pageLabels?.segments;
+    if (!segs) return printed;
+    let best = null;
+    for (const [pdfStart, printedStart] of segs) if (printed >= printedStart && (!best || printedStart > best[1])) best = [pdfStart, printedStart];
+    return best ? printed - best[1] + best[0] : printed;
+  }, [toc]);
+
+  const gotoPrinted = (v) => { setPage(v); setPdfPage(toPdfPage(parseInt(v, 10))); };
+  const gotoPdf = (pp, printed) => { setSelectedId(TEXTBOOK_ID); setPdfPage(pp); setPage(printed != null ? String(printed) : ''); };
 
   // Flat, ordered list of selectable entries.
   const entries = useMemo(() => {
@@ -48,7 +65,7 @@ export default function Materials() {
   }, [entries, selectedId]);
 
   const select = useCallback((id) => {
-    setSelectedId(id); setPage('');
+    setSelectedId(id); setPage(''); setPdfPage(0);
     try { localStorage.setItem(LS_KEY, id); } catch { /* ignore */ }
   }, []);
 
@@ -71,8 +88,7 @@ export default function Materials() {
     return entries.find((e) => e.ext === 'pdf' && !e.textbook && e.chapter === current.chapter && e.id !== current.id) || null;
   }, [current, entries]);
 
-  const pageNum = parseInt(page, 10);
-  const frameSrc = current ? (current.textbook && pageNum > 0 ? `${current.url}#page=${pageNum}` : current.url) : '';
+  const frameSrc = current ? (current.textbook && pdfPage > 0 ? `${current.url}#page=${pdfPage}` : current.url) : '';
   const dlHref = current ? (current.downloadUrl || current.url) : '';
 
   const body = () => {
@@ -88,6 +104,42 @@ export default function Materials() {
               <button className={`${s.railItem} ${selectedId === TEXTBOOK_ID ? s.railActive : ''}`} onClick={() => select(TEXTBOOK_ID)}>
                 <BookOpen size={14} /><span className={s.railText}>{data.textbook.title || 'Textbook'}</span>
               </button>
+              {toc && selectedId === TEXTBOOK_ID && (
+                <ol className={s.toc} aria-label="Table of contents">
+                  {toc.chapters.map((ch, i) => {
+                    const ext = ch.external ? entries.find((e) => (e.name || '').toLowerCase() === ch.external.toLowerCase()) : null;
+                    const open = openCh === i;
+                    return (
+                      <li key={i}>
+                        <div className={s.tocRow}>
+                          <button type="button" className={`${s.tocChapter} ${pdfPage && ch.pdfPage === pdfPage ? s.railActive : ''}`}
+                            onClick={() => (ext ? select(ext.id) : ch.pdfPage && gotoPdf(ch.pdfPage, ch.page))} title={ch.external ? `Opens ${ch.external}` : `Page ${ch.page}`}>
+                            {ch.chapter ? <span className={s.tocNum}>{ch.chapter}</span> : null}<span className={s.railText}>{ch.title}</span>
+                            {ch.page != null && <span className={s.tocPage}>{ch.page}</span>}
+                          </button>
+                          {ch.sections?.length > 0 && (
+                            <button type="button" className={s.tocToggle} aria-expanded={open} aria-label={open ? 'Collapse' : 'Expand'} onClick={() => setOpenCh(open ? null : i)}>
+                              {open ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
+                            </button>
+                          )}
+                        </div>
+                        {open && (
+                          <ol className={s.tocSections}>
+                            {ch.sections.map((sec, k) => (
+                              <li key={k}>
+                                <button type="button" className={`${s.tocSection} ${pdfPage && sec.pdfPage === pdfPage ? s.railActive : ''}`} disabled={!sec.pdfPage}
+                                  onClick={() => sec.pdfPage && gotoPdf(sec.pdfPage, sec.page)}>
+                                  <span className={s.railText}>{sec.title}</span><span className={s.tocPage}>{sec.page}</span>
+                                </button>
+                              </li>
+                            ))}
+                          </ol>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ol>
+              )}
             </div>
           )}
           {(data.chapters || []).map((ch, i) => (
@@ -116,8 +168,8 @@ export default function Materials() {
                 <button className={ps.btn} onClick={() => idx < entries.length - 1 && select(entries[idx + 1].id)} disabled={idx >= entries.length - 1} title="Next (→)"><ChevronRight size={14} /></button>
                 <h2 className={s.toolbarTitle}>{current.title || current.name}{current.size ? <span className={`${ps.muted} ${ps.small}`}> · {fmtBytes(current.size)}</span> : null}</h2>
                 {current.textbook && (
-                  <label className={s.pageJump}>Page
-                    <input className={ps.input} type="number" min="1" value={page} onChange={(e) => setPage(e.target.value)} placeholder="#" />
+                  <label className={s.pageJump} title="Printed page number, as in the table of contents">Book page
+                    <input className={ps.input} type="number" min="1" value={page} onChange={(e) => gotoPrinted(e.target.value)} placeholder="#" />
                   </label>
                 )}
                 <a className={ps.btn} href={frameSrc} target="_blank" rel="noopener noreferrer"><ExternalLink size={14} /> Open in new tab</a>
