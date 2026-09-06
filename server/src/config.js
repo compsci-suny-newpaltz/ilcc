@@ -25,6 +25,7 @@ const config = {
   maxCodeBytes:     int(process.env.MAX_CODE_BYTES, 65536),
   wsMaxPayload:     int(process.env.WS_MAX_PAYLOAD, 131072),
   sessionIdleMs:    int(process.env.SESSION_IDLE_MS, 300000),
+  debugSessionIdleMs: int(process.env.DEBUG_SESSION_IDLE_MS, 1200000),
   maxSessionsPerIp: int(process.env.MAX_SESSIONS_PER_IP, 4),
   graderTimeoutMs:  int(process.env.GRADER_TIMEOUT_MS, 5000),
   maxZipMb:         int(process.env.MAX_ZIP_MB, 50),

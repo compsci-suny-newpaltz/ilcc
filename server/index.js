@@ -103,10 +103,18 @@ server.on('upgrade', (request, socket, head) => {
     ws.once('close', release);
     ws.once('error', release);
 
-    /* Idle timeout: close sessions nobody has talked to in a while. */
-    let idle = setTimeout(() => ws.close(1000, 'idle'), config.sessionIdleMs);
-    ws.on('message', () => { clearTimeout(idle); idle = setTimeout(() => ws.close(1000, 'idle'), config.sessionIdleMs); });
-    ws.once('close', () => clearTimeout(idle));
+    /* Bound both session types so abandoned connections cannot keep server
+       resources indefinitely. Debug sessions get a longer window because
+       instructors may pause while explaining code. */
+    {
+      const idleMs = url === '/api/debug' ? config.debugSessionIdleMs : config.sessionIdleMs;
+      let idle = setTimeout(() => ws.close(1000, 'idle'), idleMs);
+      ws.on('message', () => {
+        clearTimeout(idle);
+        idle = setTimeout(() => ws.close(1000, 'idle'), idleMs);
+      });
+      ws.once('close', () => clearTimeout(idle));
+    }
 
     (url === '/api/run' ? handleRunSocket : handleDebugSocket)(ws);
   });
