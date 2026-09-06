@@ -135,6 +135,16 @@ export default function useDebugSession() {
            the first step is taken. */
         case 'line_map':
           lineMapRef.current = msg.map ?? {};
+          /* The first step result is the first time the server sends a full
+             CPU diff, but the interpreter has already loaded the executable
+             at its effective entry point. Seed the display with that PC so
+             .start labels are visible before the user steps. */
+          setDebugState(prev => prev ?? {
+            pc: { old: msg.initialPc ?? 0, new: msg.initialPc ?? 0 },
+            ir: { old: 0, new: 0 },
+            registers: Array.from({ length: 8 }, () => ({ old: 0, new: 0 })),
+            flags: { n: { old: 0, new: 0 }, z: { old: 0, new: 0 }, c: { old: 0, new: 0 }, v: { old: 0, new: 0 } },
+          });
           setCurrentLine(lineMapRef.current[msg.initialPc] ?? null);
           break;
 
