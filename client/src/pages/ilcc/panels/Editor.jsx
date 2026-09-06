@@ -15,7 +15,8 @@ import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { EditorView, basicSetup } from 'codemirror';
 import { keymap, Decoration } from '@codemirror/view';
 import { StateEffect, StateField } from '@codemirror/state';
-import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
+import { tags } from '@lezer/highlight';
 import { lccLanguage } from '../../../editor/lccLanguage';
 import { breakpointGutter, getBreakpointLines, breakpointsField } from '../../../editor/breakpointGutter';
 import styles from './Editor.module.css';
@@ -50,6 +51,18 @@ const debugLineField = StateField.define({
 
   provide: f => EditorView.decorations.from(f),
 });
+
+/* Token colors are CSS variables so an already-mounted CodeMirror editor
+   follows the app theme without needing to be recreated. */
+const editorHighlightStyle = HighlightStyle.define([
+  { tag: tags.comment, color: 'var(--syntax-comment)', fontStyle: 'italic' },
+  { tag: tags.string, color: 'var(--syntax-string)' },
+  { tag: tags.number, color: 'var(--syntax-number)' },
+  { tag: tags.keyword, color: 'var(--syntax-keyword)' },
+  { tag: tags.labelName, color: 'var(--syntax-label)' },
+  { tag: tags.variableName, color: 'var(--syntax-register)' },
+  { tag: tags.name, color: 'var(--text)' },
+]);
 
 const Editor = forwardRef(function Editor(props, ref) {
   const hostRef = useRef(null);   /* DOM element CodeMirror attaches to */
@@ -114,7 +127,9 @@ const Editor = forwardRef(function Editor(props, ref) {
       extensions: [
         basicSetup,
         lccLanguage(),
-        syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+        /* Make this the primary highlighter so basicSetup's fixed default
+           fallback colors do not win over the active theme palette. */
+        syntaxHighlighting(editorHighlightStyle),
         breakpointGutter,
         EditorView.updateListener.of((u) => {
           if (props.onBreakpointsChange && u.startState.field(breakpointsField) !== u.state.field(breakpointsField)) {

@@ -28,6 +28,12 @@
   --success: #3ddc84;
   --error: #ff5f5f;
   --debug-line: rgba(247, 168, 0, 0.13);
+  --syntax-label: #79b8ff;
+  --syntax-keyword: #c792ea;
+  --syntax-register: #f7a800;
+  --syntax-number: #f78c6c;
+  --syntax-string: #a5d6a7;
+  --syntax-comment: #6a737d;
 }
 
 :root[data-theme='light'] {
@@ -51,6 +57,12 @@
   --success: #1a9e5c;
   --error: #e03434;
   --debug-line: rgba(58, 99, 232, 0.12);
+  --syntax-label: #1d4ed8;
+  --syntax-keyword: #7c3aed;
+  --syntax-register: #9a3412;
+  --syntax-number: #b45309;
+  --syntax-string: #15803d;
+  --syntax-comment: #6b7280;
 }
 
 :root[data-theme='midnight'] {
@@ -74,6 +86,12 @@
   --success: #addb67;
   --error: #ef5350;
   --debug-line: rgba(0, 119, 186, 0.25);
+  --syntax-label: #82aaff;
+  --syntax-keyword: #c792ea;
+  --syntax-register: #ffcb6b;
+  --syntax-number: #f78c6c;
+  --syntax-string: #c3e88d;
+  --syntax-comment: #5f7e97;
 }
 
 :root[data-theme='dracula'] {
@@ -97,6 +115,12 @@
   --success: #50fa7b;
   --error: #ff5555;
   --debug-line: rgba(189, 147, 249, 0.15);
+  --syntax-label: #8be9fd;
+  --syntax-keyword: #ff79c6;
+  --syntax-register: #50fa7b;
+  --syntax-number: #bd93f9;
+  --syntax-string: #f1fa8c;
+  --syntax-comment: #6272a4;
 }
 
 :root[data-theme='monokai'] {
@@ -120,6 +144,12 @@
   --success: #a6e22e;
   --error: #f92672;
   --debug-line: rgba(166, 226, 46, 0.12);
+  --syntax-label: #66d9ef;
+  --syntax-keyword: #f92672;
+  --syntax-register: #a6e22e;
+  --syntax-number: #ae81ff;
+  --syntax-string: #e6db74;
+  --syntax-comment: #75715e;
 }
 
 html, body {
