@@ -81,6 +81,8 @@ export default function Workspace({
   const fileInputRef       = useRef(null);
   const [formatDone, setFormatDone] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
+  const [debugTopOffset, setDebugTopOffset] = useState(0);
+  const debugOffsetDragRef = useRef(null);
 
   const handleFormat = () => {
     const code = editorRef.current?.getCode() ?? '';
@@ -97,6 +99,39 @@ export default function Workspace({
       setShareCopied(true);
       setTimeout(() => setShareCopied(false), 2500);
     });
+  };
+
+  /* The projector can obscure the top of the projected workspace.  Keep a
+     small grab handle above the workspace so the whole debug layout can be
+     shifted down without changing any of the panel proportions. */
+  const startDebugOffsetDrag = (event) => {
+    if (!isDebugging) return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    debugOffsetDragRef.current = { startY: event.clientY, startOffset: debugTopOffset };
+  };
+
+  const updateDebugOffsetDrag = (event) => {
+    const drag = debugOffsetDragRef.current;
+    if (!drag) return;
+    setDebugTopOffset(Math.max(0, Math.min(240, drag.startOffset + event.clientY - drag.startY)));
+  };
+
+  const endDebugOffsetDrag = () => {
+    debugOffsetDragRef.current = null;
+  };
+
+  const adjustDebugOffset = (event) => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      setDebugTopOffset(offset => Math.max(0, Math.min(240, offset + (event.key === 'ArrowDown' ? 8 : -8))));
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      setDebugTopOffset(0);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      setDebugTopOffset(240);
+    }
   };
   const debuggerPanelRef   = useRef(null);
   const debugCardRef       = useRef(null);
@@ -190,6 +225,27 @@ export default function Workspace({
 
   return (
     <div className={styles.workspaceOuter}>
+
+      {isDebugging && <>
+        <div className={styles.debugOffsetSpacer} style={{ height: `${debugTopOffset}px` }} />
+        <div
+          className={styles.debugOffsetHandle}
+          role="separator"
+          tabIndex={0}
+          aria-label="Move debug workspace down for projection"
+          aria-valuemin="0"
+          aria-valuemax="240"
+          aria-valuenow={Math.round(debugTopOffset)}
+          title="Drag to move the debug workspace down"
+          onPointerDown={startDebugOffsetDrag}
+          onPointerMove={updateDebugOffsetDrag}
+          onPointerUp={endDebugOffsetDrag}
+          onPointerCancel={endDebugOffsetDrag}
+          onKeyDown={adjustDebugOffset}
+        >
+          <span className={styles.debugOffsetGrip} aria-hidden="true" />
+        </div>
+      </>}
 
       {/* ── Outer horizontal split: side panel | right area ── */}
       <Group orientation="horizontal" className={styles.outerHGroup}>
