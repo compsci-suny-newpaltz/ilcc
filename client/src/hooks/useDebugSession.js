@@ -74,7 +74,7 @@ export default function useDebugSession() {
      Opens the WebSocket and sends the source code. The server assembles it,
      loads it into the interpreter, initialises the snapshot log, and then
      waits — it does NOT start executing until the first step command. */
-  const start = useCallback((code) => {
+  const start = useCallback((code, loadPoint = 0) => {
     if (!code.trim()) return;
 
     if (wsRef.current) {
@@ -104,7 +104,7 @@ export default function useDebugSession() {
     wsRef.current = ws;
 
     ws.onopen = () => {
-      ws.send(JSON.stringify({ type: 'start', code }));
+      ws.send(JSON.stringify({ type: 'start', code, loadPoint }));
     };
 
     ws.onmessage = (event) => {

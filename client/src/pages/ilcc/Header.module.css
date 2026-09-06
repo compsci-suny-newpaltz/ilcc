@@ -111,6 +111,108 @@
   align-items: center;
 }
 
+.loadPointControl {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text2);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.loadPointInput {
+  width: 58px;
+  height: 30.5px;
+  box-sizing: border-box;
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  background: var(--bg2);
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 0 5px;
+  outline: none;
+}
+
+.loadPointValue {
+  display: flex;
+  align-items: center;
+}
+
+.loadPointPrefix {
+  height: 30.5px;
+  display: flex;
+  align-items: center;
+  padding-left: 6px;
+  padding-right: 0;
+  border: 1px solid var(--border2);
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  background: var(--bg2);
+  color: var(--text2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+}
+
+.loadPointValue .loadPointInput {
+  width: 42px;
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  padding-left: 0;
+  padding-right: 0;
+  text-align: left;
+}
+
+.loadPointDisabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.loadPointDisabled .loadPointInput {
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.loadPointValue:focus-within .loadPointPrefix {
+  border-color: var(--text2);
+}
+
+.loadPointInput.inputInvalid {
+  border-left: none;
+}
+
+.loadPointValue.inputInvalid .loadPointPrefix {
+  border-color: var(--danger, #f66);
+}
+
+.loadPointInput:focus {
+  border-color: var(--text2);
+}
+
+.loadPointInput:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* The wrapper owns the disabled opacity so the prefix and input fade by the
+   same amount. Keep the native disabled input from applying a second fade. */
+.loadPointDisabled .loadPointInput:disabled {
+  opacity: 1;
+  background: var(--bg2);
+  color: var(--text);
+  -webkit-text-fill-color: var(--text);
+}
+
+.loadPointDisabled .loadPointPrefix {
+  background: var(--bg2);
+  color: var(--text2);
+}
+
+.inputInvalid {
+  border-color: var(--danger, #f66);
+}
+
 /* ── Right section (settings) ── */
 
 .headerRight {

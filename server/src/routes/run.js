@@ -18,6 +18,7 @@
  */
 
 const { createRunSession } = require('../services/runner');
+const { parseLoadPoint } = require('../services/loadPoint');
 
 function handleRunSocket(ws) {
   let session = null;
@@ -47,12 +48,18 @@ function handleRunSocket(ws) {
           return;
         }
 
+        const loadPoint = parseLoadPoint(msg.loadPoint);
+        if (loadPoint === null) {
+          send({ type: 'error', message: 'Load Point must be a hexadecimal address from 0000 to ffff.' });
+          return;
+        }
+
         session = createRunSession(msg.code, {
           onOutput:       (text) => send({ type: 'output', text }),
           onInputRequest: ()     => send({ type: 'input_request' }),
           onDone:         ()     => send({ type: 'done' }),
           onError:        (message) => send({ type: 'error', message }),
-        });
+        }, { loadPoint });
 
         if (session) session.start();
         break;

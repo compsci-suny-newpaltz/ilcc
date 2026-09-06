@@ -31,6 +31,20 @@ export default function Ilcc() {
   const { theme, setTheme, themes } = useTheme();
   useTour();
   const [debuggerLayout, setDebuggerLayout] = useState('classic');
+  const [loadPointInput, setLoadPointInput] = useState(() => {
+    try { return (window.localStorage.getItem('ilcc.loadPoint') || '0000').replace(/^0x/i, ''); } catch { return '0000'; }
+  });
+
+  const parseLoadPoint = (value) => {
+    const clean = value.trim().replace(/^0x/i, '');
+    if (!/^[0-9a-f]{1,4}$/i.test(clean)) return null;
+    return parseInt(clean, 16);
+  };
+  const loadPoint = parseLoadPoint(loadPointInput);
+
+  useEffect(() => {
+    try { window.localStorage.setItem('ilcc.loadPoint', loadPointInput); } catch { /* storage unavailable */ }
+  }, [loadPointInput]);
 
   /* Ref to the CodeMirror editor — call editorRef.current.getCode()
      to read the document contents on demand (run/debug). */
@@ -199,14 +213,18 @@ export default function Ilcc() {
 
   /* ── Handler: Run button ──
      Reads the editor and sends to POST /api/run. */
-  const handleRun = () => runner.run(getCode());
+  const handleRun = () => {
+    if (loadPoint === null) { reportProblem('Load Point must be 1–4 hexadecimal digits (0000–ffff).'); return; }
+    runner.run(getCode(), loadPoint);
+  };
 
   /* ── Handler: Debug button ──
      Reads the editor and starts an interactive debug session. */
   const handleDebug = async () => {
+    if (loadPoint === null) { reportProblem('Load Point must be 1–4 hexadecimal digits (0000–ffff).'); return; }
     setProblems([]);
     try {
-      await debug_session.start(getCode());
+      await debug_session.start(getCode(), loadPoint);
     } catch (err) {
       reportProblem(err);
     }
@@ -267,6 +285,12 @@ export default function Ilcc() {
         themes={themes}
         debuggerLayout={debuggerLayout}
         setDebuggerLayout={setDebuggerLayout}
+        loadPointInput={loadPointInput}
+        onLoadPointChange={setLoadPointInput}
+        onLoadPointBlur={() => {
+          if (loadPoint !== null) setLoadPointInput(loadPoint.toString(16).padStart(4, '0'));
+        }}
+        loadPointInvalid={loadPoint === null}
       />
 
       {/* Workspace: editor, terminal, and debugger panels */}

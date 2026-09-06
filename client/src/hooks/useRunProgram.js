@@ -45,7 +45,7 @@ export default function useRunProgram() {
   /* ── run(code) ──────────────────────────────────────────────────────────
      Opens a new WebSocket connection and immediately sends the source code.
      If a previous connection is still open it is closed first. */
-  const run = useCallback((code) => {
+  const run = useCallback((code, loadPoint = 0) => {
     if (!code.trim()) return;
 
     /* Close any lingering connection from a previous run. */
@@ -65,7 +65,7 @@ export default function useRunProgram() {
     wsRef.current = ws;
 
     ws.onopen = () => {
-      ws.send(JSON.stringify({ type: 'start', code }));
+      ws.send(JSON.stringify({ type: 'start', code, loadPoint }));
     };
 
     ws.onmessage = (event) => {

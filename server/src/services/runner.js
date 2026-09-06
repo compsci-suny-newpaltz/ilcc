@@ -29,7 +29,7 @@ const Interpreter = require('../web_ilcc/interpreter');
    The autograder passes false so expected_stdout needn't include the inputs. */
 function createRunSession(sourceCode, callbacks, options = {}) {
   const { onOutput, onInputRequest, onDone, onError } = callbacks;
-  const { echoInput = true } = options;
+  const { echoInput = true, loadPoint = 0 } = options;
 
   /* ── 1. Write source to a temp .a file ── */
   const id    = crypto.randomUUID();
@@ -51,6 +51,7 @@ function createRunSession(sourceCode, callbacks, options = {}) {
 
   /* ── 3. Create and configure the interpreter ── */
   const interp = new Interpreter();
+  interp.loadPoint = loadPoint;
   interp.onOutput = onOutput;
   interp.onInputRequest = onInputRequest;
   interp.echoInput = echoInput;

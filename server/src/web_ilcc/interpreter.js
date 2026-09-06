@@ -308,6 +308,7 @@ class Interpreter {
 		// Do not store the 'o' signature in headerLines
 
 		let startAddress = 0; // Default start address
+		const adjustmentAddresses = [];
 
 		// Read header entries until 'C' is encountered
 		while (offset < buffer.length) {
@@ -346,13 +347,15 @@ class Interpreter {
 					`G ${address.toString(16).padStart(4, "0")} ${label}`
 				);
 			} else if (entryChar === "A") {
-				// Skip 'A' entry: Read address
+				// Relocation entry: read the image-relative address of a word
+				// that contains an absolute program address.
 				if (offset + 1 >= buffer.length) {
 					this.error("Incomplete A entry in header");
 					return;
 				}
 				const address = buffer.readUInt16LE(offset);
 				offset += 2;
+				adjustmentAddresses.push(address);
 				this.headerLines.push(
 					`A ${address.toString(16).padStart(4, "0")}`
 				);
@@ -372,6 +375,15 @@ class Interpreter {
 		}
 
 		this.memMax = memIndex - 1; // Last memory address used
+
+		/* The assembler emits absolute addresses relative to load point 0.
+		   Adjust those marked by A entries when the image is loaded elsewhere. */
+		for (const address of adjustmentAddresses) {
+			const relocatedAddress = this.loadPoint + address;
+			if (relocatedAddress >= this.loadPoint && relocatedAddress <= this.memMax) {
+				this.mem[relocatedAddress] = (this.mem[relocatedAddress] + this.loadPoint) & 0xffff;
+			}
+		}
 
 		// Set PC to loadPoint + startAddress
 		this.pc = (this.loadPoint + startAddress) & 0xffff;

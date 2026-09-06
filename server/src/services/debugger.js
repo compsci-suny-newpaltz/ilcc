@@ -34,8 +34,9 @@ const crypto = require('crypto');
 const Assembler   = require('../web_ilcc/assembler');
 const Interpreter = require('../web_ilcc/interpreter');
 
-function createDebugSession(sourceCode, callbacks) {
+function createDebugSession(sourceCode, callbacks, options = {}) {
   const { onOutput, onInputRequest, onDone, onError } = callbacks;
+  const { loadPoint = 0 } = options;
 
   /* ── 1. Write source to a temp .a file ── */
   const id    = crypto.randomUUID();
@@ -57,6 +58,7 @@ function createDebugSession(sourceCode, callbacks) {
 
   /* ── 3. Create and configure the interpreter ── */
   const interp = new Interpreter();
+  interp.loadPoint = loadPoint;
   interp.onOutput       = onOutput;
   interp.onInputRequest = onInputRequest;
   interp.loadExecutableFile(ePath);

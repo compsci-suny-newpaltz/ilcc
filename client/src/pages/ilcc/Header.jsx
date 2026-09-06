@@ -42,6 +42,10 @@ export default function Header({
   themes,
   debuggerLayout,
   setDebuggerLayout,
+  loadPointInput,
+  onLoadPointChange,
+  onLoadPointBlur,
+  loadPointInvalid,
 }) {
   const [stepCountStr, setStepCountStr] = useState('1');
 
@@ -150,6 +154,27 @@ export default function Header({
 
       {/* Centre: run/debug/step controls */}
       <div className={styles.actions}>
+
+        <label className={styles.loadPointControl}>
+          <span>Load Point:</span>
+          <span className={`${styles.loadPointValue} ${loadPointInvalid ? styles.inputInvalid : ''} ${(isRunning || isDebugging) ? styles.loadPointDisabled : ''}`}>
+            <span className={styles.loadPointPrefix} aria-hidden="true">0x</span>
+            <input
+              className={`${styles.loadPointInput} ${loadPointInvalid ? styles.inputInvalid : ''}`}
+              type="text"
+              inputMode="text"
+              value={loadPointInput}
+              onChange={e => onLoadPointChange(e.target.value.replace(/^0x/i, ''))}
+              onBlur={onLoadPointBlur}
+              disabled={isRunning || isDebugging}
+              spellCheck={false}
+              maxLength={4}
+              aria-label="Load Point hexadecimal digits"
+              aria-invalid={loadPointInvalid}
+              title="Hexadecimal load address"
+            />
+          </span>
+        </label>
 
         <div className={styles.btnGroup}>
           <button
