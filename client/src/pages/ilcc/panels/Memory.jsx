@@ -92,11 +92,19 @@ export default function Memory({ debugState, memoryMap = {}, isDebugging = false
   }, [isDebugging, loadPoint]);
 
   /* Jump: exact match, or nearest written address >= target. */
-  function handleJump(e) {
-    if (e.key !== 'Enter') return;
+  function jumpToAddress() {
     const target = parseHex(jumpInput);
     if (target === null) return;
     contentRef.current?.scrollTo({ top: Math.max(0, target * ROW_HEIGHT - (contentRef.current.clientHeight / 2)), behavior: 'smooth' });
+  }
+
+  function handleJump(e) {
+    if (e.key === 'Enter') jumpToAddress();
+  }
+
+  function jumpToPc() {
+    if (pc === null) return;
+    contentRef.current?.scrollTo({ top: Math.max(0, pc * ROW_HEIGHT - (contentRef.current.clientHeight / 2)), behavior: 'smooth' });
   }
 
   const pc    = debugState?.pc?.new ?? null;
@@ -151,7 +159,7 @@ export default function Memory({ debugState, memoryMap = {}, isDebugging = false
 
       {/* Jump-to-address bar */}
       <div className={styles.jumpBar}>
-        <span className={styles.jumpLabel}>Jump</span>
+        <button className={styles.jumpLabel} type="button" onClick={jumpToAddress}>Jump</button>
         <input
           className={styles.jumpInput}
           type="text"
@@ -162,6 +170,7 @@ export default function Memory({ debugState, memoryMap = {}, isDebugging = false
           spellCheck={false}
           aria-label="Jump to memory address"
         />
+        <button className={styles.jumpButton} type="button" onClick={jumpToPc} disabled={pc === null} title="Jump to program counter">PC</button>
       </div>
     </div>
   );
