@@ -28,6 +28,15 @@ const ADDRESS_COUNT = 0x10000;
 const ROW_HEIGHT = 22;
 const OVERSCAN = 12;
 
+function scrollAddressIntoView(content, address, behavior = 'smooth') {
+  if (!content || address == null) return;
+  const maxScroll = Math.max(0, content.scrollHeight - content.clientHeight);
+  content.scrollTo({
+    top: Math.min(address * ROW_HEIGHT, maxScroll),
+    behavior,
+  });
+}
+
 function parseHex(s) {
   const clean = s.trim().replace(/^0x/i, '');
   const v = parseInt(clean, 16);
@@ -86,7 +95,7 @@ export default function Memory({ debugState, memoryMap = {}, isDebugging = false
     const el = contentRef.current;
     if (!el || !isDebugging) return;
     const id = setTimeout(() => {
-      el.scrollTo({ top: Math.max(0, loadPoint * ROW_HEIGHT - el.clientHeight / 2), behavior: 'instant' });
+      scrollAddressIntoView(el, loadPoint, 'instant');
     }, 0);
     return () => clearTimeout(id);
   }, [isDebugging, loadPoint]);
@@ -95,7 +104,7 @@ export default function Memory({ debugState, memoryMap = {}, isDebugging = false
   function jumpToAddress() {
     const target = parseHex(jumpInput);
     if (target === null) return;
-    contentRef.current?.scrollTo({ top: Math.max(0, target * ROW_HEIGHT - (contentRef.current.clientHeight / 2)), behavior: 'smooth' });
+    scrollAddressIntoView(contentRef.current, target);
   }
 
   function handleJump(e) {
@@ -104,7 +113,7 @@ export default function Memory({ debugState, memoryMap = {}, isDebugging = false
 
   function jumpToPc() {
     if (pc === null) return;
-    contentRef.current?.scrollTo({ top: Math.max(0, pc * ROW_HEIGHT - (contentRef.current.clientHeight / 2)), behavior: 'smooth' });
+    scrollAddressIntoView(contentRef.current, pc);
   }
 
   const pc    = debugState?.pc?.new ?? null;
