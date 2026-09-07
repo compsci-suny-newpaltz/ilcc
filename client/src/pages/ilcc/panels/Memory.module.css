@@ -132,6 +132,7 @@
 .row {
   display: flex;
   align-items: center;
+  height: 22px;
   gap: 8px;
   padding: 3px 10px;
   flex-shrink: 0;

@@ -19,23 +19,11 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import styles from './Memory.module.css';
+import { ADDRESS_COUNT, ROW_HEIGHT, OVERSCAN, scrollAddressIntoView } from './virtualMemory';
 
 /* ── helpers ─────────────────────────────────────────────────────────────── */
 
 const hex4 = (v) => (v >>> 0).toString(16).padStart(4, '0');
-
-const ADDRESS_COUNT = 0x10000;
-const ROW_HEIGHT = 22;
-const OVERSCAN = 12;
-
-function scrollAddressIntoView(content, address, behavior = 'smooth') {
-  if (!content || address == null) return;
-  const maxScroll = Math.max(0, content.scrollHeight - content.clientHeight);
-  content.scrollTo({
-    top: Math.min(address * ROW_HEIGHT, maxScroll),
-    behavior,
-  });
-}
 
 function parseHex(s) {
   const clean = s.trim().replace(/^0x/i, '');

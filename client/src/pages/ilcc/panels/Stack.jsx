@@ -26,14 +26,11 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import styles from './Stack.module.css';
+import { ADDRESS_COUNT, ROW_HEIGHT, OVERSCAN, scrollAddressIntoView } from './virtualMemory';
 
 /* ── helpers ─────────────────────────────────────────────────────────────── */
 
 const hex4 = (v) => (v >>> 0).toString(16).padStart(4, '0');
-
-const ADDRESS_COUNT = 0x10000;
-const ROW_HEIGHT = 24;
-const OVERSCAN = 12;
 
 function DiffVal({ change, plain }) {
   if (change && change.old !== change.new) {
@@ -61,7 +58,6 @@ export default function Stack({ debugState, memoryMap = {}, isDebugging = false 
   const [scrollTop, setScrollTop] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
   const contentRef = useRef(null);
-  const rowRefs  = useRef({});
 
   const sp    = debugState?.registers[6]?.new ?? 0;
   const spOld = debugState?.registers[6]?.old ?? 0;
@@ -95,20 +91,27 @@ export default function Stack({ debugState, memoryMap = {}, isDebugging = false 
     return () => { el.removeEventListener('scroll', update); observer.disconnect(); };
   }, []);
 
-  /* Scroll the current sp row into view whenever sp changes. */
+  /* Start at the top of the stack (the high end of memory), but preserve the
+     user's position while stepping. */
   useEffect(() => {
     const el = contentRef.current;
     if (!el) return;
-    const target = sp !== 0 ? sp : 0xffff;
-    el.scrollTo({ top: Math.max(0, target * ROW_HEIGHT - el.clientHeight / 2), behavior: 'instant' });
-  }, [sp, isDebugging]);
+    if (!isDebugging) return;
+    const id = setTimeout(() => scrollAddressIntoView(el, 0xffff, 'instant'), 0);
+    return () => clearTimeout(id);
+  }, [isDebugging]);
+
+  function jumpToAddress() {
+    const target = parseHex(jumpInput);
+    if (target !== null) scrollAddressIntoView(contentRef.current, target);
+  }
 
   function handleJump(e) {
-    if (e.key !== 'Enter') return;
-    const target = parseHex(jumpInput);
-    if (target !== null) {
-      rowRefs.current[target]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    }
+    if (e.key === 'Enter') jumpToAddress();
+  }
+
+  function jumpToRegister(value) {
+    scrollAddressIntoView(contentRef.current, value);
   }
 
   if (!isDebugging) {
@@ -134,8 +137,8 @@ export default function Stack({ debugState, memoryMap = {}, isDebugging = false 
         <div style={{ height: ADDRESS_COUNT * ROW_HEIGHT, flexShrink: 0, position: 'relative' }}>
           <div style={{ position: 'absolute', top: firstVisible * ROW_HEIGHT, left: 0, right: 0 }}>
         {visibleAddrs.map(addr => {
-          const isSp    = sp    !== 0 && addr === sp;
-          const isFp    = fp    !== 0 && addr === fp;
+          const isSp    = addr === sp;
+          const isFp    = addr === fp;
           /* Previous locations — shown in red for one step after the pointer moves. */
           const isOldSp = sp !== 0 && spOld !== 0 && spOld !== sp && addr === spOld;
           const isOldFp = fp !== 0 && fpOld !== 0 && fpOld !== fp && addr === fpOld;
@@ -144,10 +147,10 @@ export default function Stack({ debugState, memoryMap = {}, isDebugging = false 
              Within old tags, the combined fpsp> label fires when both old
              pointers happened to share the same address. */
           let tag = '', tagClass = styles.pointerTag;
-          if      (isSp && isFp)       { tag = 'fpsp>'; }
+          if      (isSp && isFp)       { tag = 'fp sp>'; }
           else if (isSp)               { tag = 'sp>'; }
           else if (isFp)               { tag = 'fp>'; }
-          else if (isOldSp && isOldFp) { tag = 'fpsp>'; tagClass = styles.pointerTagOld; }
+          else if (isOldSp && isOldFp) { tag = 'fp sp>'; tagClass = styles.pointerTagOld; }
           else if (isOldSp)            { tag = 'sp>';   tagClass = styles.pointerTagOld; }
           else if (isOldFp)            { tag = 'fp>';   tagClass = styles.pointerTagOld; }
 
@@ -157,9 +160,6 @@ export default function Stack({ debugState, memoryMap = {}, isDebugging = false 
           return (
             <div
               key={addr}
-              ref={el => {
-                rowRefs.current[addr] = el;
-              }}
               className={`${styles.row} ${change ? styles.changed : ''}`}
             >
               <span className={tagClass}>{tag}</span>
@@ -174,7 +174,7 @@ export default function Stack({ debugState, memoryMap = {}, isDebugging = false 
 
       {/* Jump-to-address bar */}
       <div className={styles.jumpBar}>
-        <span className={styles.jumpLabel}>Jump</span>
+        <button className={styles.jumpLabel} type="button" onClick={jumpToAddress}>Jump</button>
         <input
           className={styles.jumpInput}
           type="text"
@@ -185,6 +185,8 @@ export default function Stack({ debugState, memoryMap = {}, isDebugging = false 
           spellCheck={false}
           aria-label="Jump to stack address"
         />
+        <button className={styles.jumpButton} type="button" onClick={() => jumpToRegister(fp)} title="Jump to frame pointer">FP</button>
+        <button className={styles.jumpButton} type="button" onClick={() => jumpToRegister(sp)} title="Jump to stack pointer">SP</button>
       </div>
 
     </div>
