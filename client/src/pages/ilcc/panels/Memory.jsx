@@ -104,8 +104,15 @@ export default function Memory({ debugState, memoryMap = {}, isDebugging = false
     scrollAddressIntoView(contentRef.current, pc);
   }
 
+  function jumpToLr() {
+    if (lr === null) return;
+    scrollAddressIntoView(contentRef.current, lr);
+  }
+
   const pc    = debugState?.pc?.new ?? null;
   const pcOld = debugState?.pc?.old ?? null;
+  const lr    = debugState?.registers[7]?.new ?? null;
+  const lrOld = debugState?.registers[7]?.old ?? null;
 
   if (!isDebugging) {
     return (
@@ -135,8 +142,15 @@ export default function Memory({ debugState, memoryMap = {}, isDebugging = false
 
             const isPc    = pc    !== null && addr === pc;
             const isOldPc = pcOld !== null && pcOld !== pc && addr === pcOld;
-            const tagText  = (isPc || isOldPc) ? 'pc>' : '';
-            const tagClass = isPc ? styles.pointerTag : isOldPc ? styles.pointerTagOld : styles.tag;
+            const isLr    = lr    !== null && addr === lr;
+            const isOldLr = lrOld !== null && lrOld !== lr && addr === lrOld;
+            const tagText = isPc && isLr ? 'lr pc>'
+              : isPc ? 'pc>'
+                : isLr ? 'lr>'
+                  : isOldPc && isOldLr ? 'lr pc>'
+                    : isOldPc ? 'pc>' : isOldLr ? 'lr>' : '';
+            const tagClass = (isPc || isLr) ? styles.pointerTag
+              : (isOldPc || isOldLr) ? styles.pointerTagOld : styles.tag;
 
             return (
               <div
@@ -168,6 +182,7 @@ export default function Memory({ debugState, memoryMap = {}, isDebugging = false
           aria-label="Jump to memory address"
         />
         <button className={styles.jumpButton} type="button" onClick={jumpToPc} disabled={pc === null} title="Jump to program counter">PC</button>
+        <button className={styles.jumpButton} type="button" onClick={jumpToLr} disabled={lr === null} title="Jump to link register">LR</button>
       </div>
     </div>
   );
