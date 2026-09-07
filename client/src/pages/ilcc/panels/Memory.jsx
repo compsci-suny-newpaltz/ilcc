@@ -17,14 +17,16 @@
  *   memoryMap  — { [addr: number]: number } accumulated cell values.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import styles from './Memory.module.css';
 
 /* ── helpers ─────────────────────────────────────────────────────────────── */
 
 const hex4 = (v) => (v >>> 0).toString(16).padStart(4, '0');
 
-const PROGRAM_AREA_MAX = 0x7fff;
+const ADDRESS_COUNT = 0x10000;
+const ROW_HEIGHT = 22;
+const OVERSCAN = 12;
 
 function parseHex(s) {
   const clean = s.trim().replace(/^0x/i, '');
@@ -47,53 +49,54 @@ function DiffVal({ change, plain }) {
 
 /* ── component ───────────────────────────────────────────────────────────── */
 
-export default function Memory({ debugState, memoryMap = {}, isDebugging = false }) {
+export default function Memory({ debugState, memoryMap = {}, isDebugging = false, loadPoint = 0 }) {
   const [jumpInput, setJumpInput] = useState('');
-  const rowRefs = useRef({});
+  const [scrollTop, setScrollTop] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const contentRef = useRef(null);
 
   /* Current-step changes, filtered to program area. */
   const changesThisStep = new Map();
   for (const ch of (debugState?.memory ?? [])) {
-    if (ch.addr <= PROGRAM_AREA_MAX) {
-      changesThisStep.set(ch.addr, ch);
-    }
+    changesThisStep.set(ch.addr, ch);
   }
 
-  /* Union of all known program-area addresses, sorted ascending. */
-  const addrs = [
-    ...new Set([
-      ...Object.keys(memoryMap).map(Number).filter(a => a <= PROGRAM_AREA_MAX),
-      ...changesThisStep.keys(),
-    ]),
-  ].sort((a, b) => a - b);
+  const firstVisible = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - OVERSCAN);
+  const visibleCount = Math.ceil((viewportHeight || ROW_HEIGHT * 20) / ROW_HEIGHT) + OVERSCAN * 2;
+  const visibleAddrs = useMemo(
+    () => Array.from({ length: Math.min(ADDRESS_COUNT - firstVisible, visibleCount) }, (_, i) => firstVisible + i),
+    [firstVisible, visibleCount],
+  );
 
-  /* After each step, scroll to the first changed program-area address.
-     We try immediately and also schedule a retry via setTimeout(0) because
-     setDebugState and setMemoryMap may commit in separate renders: on the
-     first commit the new row's ref isn't in the DOM yet, but it will be by
-     the time the macro-task fires. */
   useEffect(() => {
-    if (!changesThisStep.size) return;
-    const firstChanged = [...changesThisStep.keys()].sort((a, b) => a - b)[0];
+    const el = contentRef.current;
+    if (!el) return;
+    const update = () => {
+      setScrollTop(el.scrollTop);
+      setViewportHeight(el.clientHeight);
+    };
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => { el.removeEventListener('scroll', update); observer.disconnect(); };
+  }, []);
 
-    function tryScroll() {
-      rowRefs.current[firstChanged]?.scrollIntoView({ block: 'center', behavior: 'instant' });
-    }
-
-    tryScroll();
-    const id = setTimeout(tryScroll, 0);
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el || !isDebugging) return;
+    const id = setTimeout(() => {
+      el.scrollTo({ top: Math.max(0, loadPoint * ROW_HEIGHT - el.clientHeight / 2), behavior: 'instant' });
+    }, 0);
     return () => clearTimeout(id);
-  }, [debugState]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isDebugging, loadPoint]);
 
   /* Jump: exact match, or nearest written address >= target. */
   function handleJump(e) {
     if (e.key !== 'Enter') return;
     const target = parseHex(jumpInput);
-    if (target === null || addrs.length === 0) return;
-
-    /* Find the first address in the list that is >= target. */
-    const dest = addrs.find(a => a >= target) ?? addrs[addrs.length - 1];
-    rowRefs.current[dest]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    if (target === null) return;
+    contentRef.current?.scrollTo({ top: Math.max(0, target * ROW_HEIGHT - (contentRef.current.clientHeight / 2)), behavior: 'smooth' });
   }
 
   const pc    = debugState?.pc?.new ?? null;
@@ -118,12 +121,10 @@ export default function Memory({ debugState, memoryMap = {}, isDebugging = false
       </div>
 
       {/* Scrollable content */}
-      <div className={styles.content}>
-
-        {addrs.length === 0 ? (
-          <span className={styles.empty}>No program memory writes yet</span>
-        ) : (
-          addrs.map(addr => {
+      <div className={styles.content} ref={contentRef}>
+        <div style={{ height: ADDRESS_COUNT * ROW_HEIGHT, flexShrink: 0, position: 'relative' }}>
+          <div style={{ position: 'absolute', top: firstVisible * ROW_HEIGHT, left: 0, right: 0 }}>
+          {visibleAddrs.map(addr => {
             const change = changesThisStep.get(addr);
             const val    = memoryMap[addr] ?? 0;
 
@@ -135,7 +136,6 @@ export default function Memory({ debugState, memoryMap = {}, isDebugging = false
             return (
               <div
                 key={addr}
-                ref={el => { rowRefs.current[addr] = el; }}
                 className={`${styles.row} ${change ? styles.changed : ''}`}
               >
                 <span className={tagClass}>{tagText}</span>
@@ -143,8 +143,9 @@ export default function Memory({ debugState, memoryMap = {}, isDebugging = false
                 <DiffVal change={change} plain={val} />
               </div>
             );
-          })
-        )}
+          })}
+          </div>
+        </div>
 
       </div>
 

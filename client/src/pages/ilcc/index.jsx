@@ -307,6 +307,7 @@ export default function Ilcc() {
         debugState={debug_session.debugState}
         memoryMap={debug_session.memoryMap}
         isDebugging={debug_session.isDebugging}
+        loadPoint={loadPoint ?? 0}
         iteration={debug_session.iteration}
         tabs={tabs}
         activeTabId={activeTabId}

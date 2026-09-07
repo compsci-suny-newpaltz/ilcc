@@ -24,14 +24,16 @@
  *   memoryMap  — { [addr: number]: number } accumulated cell values.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import styles from './Stack.module.css';
 
 /* ── helpers ─────────────────────────────────────────────────────────────── */
 
 const hex4 = (v) => (v >>> 0).toString(16).padStart(4, '0');
 
-const ROWS_ABOVE_SP = 16;
+const ADDRESS_COUNT = 0x10000;
+const ROW_HEIGHT = 24;
+const OVERSCAN = 12;
 
 function DiffVal({ change, plain }) {
   if (change && change.old !== change.new) {
@@ -56,7 +58,9 @@ function parseHex(s) {
 
 export default function Stack({ debugState, memoryMap = {}, isDebugging = false }) {
   const [jumpInput, setJumpInput] = useState('');
-  const spRowRef = useRef(null);
+  const [scrollTop, setScrollTop] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const contentRef = useRef(null);
   const rowRefs  = useRef({});
 
   const sp    = debugState?.registers[6]?.new ?? 0;
@@ -64,26 +68,40 @@ export default function Stack({ debugState, memoryMap = {}, isDebugging = false 
   const fp    = debugState?.registers[5]?.new ?? 0;
   const fpOld = debugState?.registers[5]?.old ?? 0;
 
-  /* When sp=0 (not yet set), default the view to the top of the stack area. */
-  const displaySp = sp !== 0 ? sp : 0xffff;
-
   /* Build a fast lookup for cells that changed THIS step. */
   const changesThisStep = new Map();
   for (const ch of (debugState?.memory ?? [])) {
     changesThisStep.set(ch.addr, ch);
   }
 
+  const firstVisible = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - OVERSCAN);
+  const visibleCount = Math.ceil((viewportHeight || ROW_HEIGHT * 20) / ROW_HEIGHT) + OVERSCAN * 2;
+  const visibleAddrs = useMemo(
+    () => Array.from({ length: Math.min(ADDRESS_COUNT - firstVisible, visibleCount) }, (_, i) => firstVisible + i),
+    [firstVisible, visibleCount],
+  );
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const update = () => {
+      setScrollTop(el.scrollTop);
+      setViewportHeight(el.clientHeight);
+    };
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => { el.removeEventListener('scroll', update); observer.disconnect(); };
+  }, []);
+
   /* Scroll the current sp row into view whenever sp changes. */
   useEffect(() => {
-    spRowRef.current?.scrollIntoView({ block: 'center', behavior: 'instant' });
-  }, [sp]);
-
-  /* Address range: ROWS_ABOVE_SP rows above displaySp, then every address to 0xffff. */
-  const startAddr = Math.max(0, displaySp - ROWS_ABOVE_SP);
-  const rows = [];
-  for (let addr = startAddr; addr <= 0xffff; addr++) {
-    rows.push(addr);
-  }
+    const el = contentRef.current;
+    if (!el) return;
+    const target = sp !== 0 ? sp : 0xffff;
+    el.scrollTo({ top: Math.max(0, target * ROW_HEIGHT - el.clientHeight / 2), behavior: 'instant' });
+  }, [sp, isDebugging]);
 
   function handleJump(e) {
     if (e.key !== 'Enter') return;
@@ -112,9 +130,10 @@ export default function Stack({ debugState, memoryMap = {}, isDebugging = false 
       </div>
 
       {/* Scrollable rows — always rendered; all zeros before first step */}
-      <div className={styles.content}>
-
-        {rows.map(addr => {
+      <div className={styles.content} ref={contentRef}>
+        <div style={{ height: ADDRESS_COUNT * ROW_HEIGHT, flexShrink: 0, position: 'relative' }}>
+          <div style={{ position: 'absolute', top: firstVisible * ROW_HEIGHT, left: 0, right: 0 }}>
+        {visibleAddrs.map(addr => {
           const isSp    = sp    !== 0 && addr === sp;
           const isFp    = fp    !== 0 && addr === fp;
           /* Previous locations — shown in red for one step after the pointer moves. */
@@ -140,7 +159,6 @@ export default function Stack({ debugState, memoryMap = {}, isDebugging = false 
               key={addr}
               ref={el => {
                 rowRefs.current[addr] = el;
-                if (isSp) spRowRef.current = el;
               }}
               className={`${styles.row} ${change ? styles.changed : ''}`}
             >
@@ -150,6 +168,8 @@ export default function Stack({ debugState, memoryMap = {}, isDebugging = false 
             </div>
           );
         })}
+          </div>
+        </div>
       </div>
 
       {/* Jump-to-address bar */}

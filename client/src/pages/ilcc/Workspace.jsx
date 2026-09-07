@@ -71,7 +71,7 @@ import Memory from './panels/Memory';
 export default function Workspace({
   editorRef,
   output, inputMode, onSendInput,
-  debugState, memoryMap, isDebugging, iteration,
+  debugState, memoryMap, isDebugging, iteration, loadPoint,
   tabs, activeTabId, onSwitchTab, onNewTab, onCloseTab, onRenameTab,
   onImportFiles, onExport,
   debuggerLayout = 'classic',
@@ -366,7 +366,7 @@ export default function Workspace({
                         <>
                           <div className={styles.classicColumn}>
                             <div className={styles.sectionHeader} data-tour="memory">Memory</div>
-                            <Memory debugState={debugState} memoryMap={memoryMap} isDebugging={isDebugging} />
+                            <Memory debugState={debugState} memoryMap={memoryMap} isDebugging={isDebugging} loadPoint={loadPoint} />
                           </div>
                           <div className={`${styles.classicColumn} ${styles.classicDivider}`}>
                             <div className={styles.sectionHeader} data-tour="stack">Stack</div>
@@ -383,7 +383,7 @@ export default function Workspace({
                             <Panel defaultSize={50} minSize={15} className={styles.memStackPanel}>
                               <div className={styles.debugSection}>
                                 <div className={styles.sectionHeader}>Memory</div>
-                                <Memory debugState={debugState} memoryMap={memoryMap} isDebugging={isDebugging} />
+                                <Memory debugState={debugState} memoryMap={memoryMap} isDebugging={isDebugging} loadPoint={loadPoint} />
                               </div>
                             </Panel>
 
