@@ -97,7 +97,11 @@ export default function Stack({ debugState, memoryMap = {}, isDebugging = false 
     const el = contentRef.current;
     if (!el) return;
     if (!isDebugging) return;
-    const id = setTimeout(() => scrollAddressIntoView(el, 0xffff, 'instant'), 0);
+    const id = setTimeout(() => {
+      /* The virtualized content has now laid out; use the exact maximum
+         scroll offset so the view always ends at address 0xffff. */
+      el.scrollTop = el.scrollHeight - el.clientHeight;
+    }, 0);
     return () => clearTimeout(id);
   }, [isDebugging]);
 
