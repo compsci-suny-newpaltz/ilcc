@@ -119,7 +119,7 @@
   font-size: 11px;
   font-family: "JetBrains Mono", monospace;
   font-weight: 600;
-  color: #4ade80;
+  color: var(--debug-new);
   min-width: 52px;
   text-align: right;
   flex-shrink: 0;
@@ -131,7 +131,7 @@
   font-size: 11px;
   font-family: "JetBrains Mono", monospace;
   font-weight: 600;
-  color: #f87171;
+  color: var(--debug-old);
   min-width: 52px;
   text-align: right;
   flex-shrink: 0;
@@ -156,12 +156,12 @@
 
 /* ── Changed-row highlight (flash → settle) ── */
 @keyframes cell-flash {
-  from { background: rgba(74, 222, 128, 0.28); }
-  to   { background: rgba(74, 222, 128, 0.08); }
+  from { background: var(--debug-flash); }
+  to   { background: var(--debug-change); }
 }
 
 .changed {
-  background: rgba(74, 222, 128, 0.08);
+  background: var(--debug-change);
   animation: cell-flash 0.6s ease-out forwards;
 }
 
@@ -181,6 +181,6 @@
   flex-shrink: 0;
 }
 
-.old { color: #f87171; font-family: "JetBrains Mono", monospace; font-size: 12px; }
+.old { color: var(--debug-old); font-family: "JetBrains Mono", monospace; font-size: 12px; }
 .sep { color: var(--text2); font-family: "JetBrains Mono", monospace; font-size: 12px; }
-.new { color: #4ade80; font-family: "JetBrains Mono", monospace; font-size: 12px; }
+.new { color: var(--debug-new); font-family: "JetBrains Mono", monospace; font-size: 12px; }

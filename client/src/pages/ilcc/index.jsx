@@ -24,11 +24,13 @@ import Drawer from './Drawer';
 import useRunProgram from '../../hooks/useRunProgram';
 import useDebugSession from '../../hooks/useDebugSession';
 import useTheme from '../../hooks/useTheme';
+import useDebugColors from '../../hooks/useDebugColors';
 import useTour from '../../hooks/useTour';
 import useShortcuts from '../../hooks/useShortcuts';
 
 export default function Ilcc() {
   const { theme, setTheme, themes } = useTheme();
+  const { debugColorScheme, setDebugColorScheme, debugColorSchemes } = useDebugColors();
   useTour();
   const [debuggerLayout, setDebuggerLayout] = useState('classic');
   const [loadPointInput, setLoadPointInput] = useState(() => {
@@ -283,6 +285,9 @@ export default function Ilcc() {
         theme={theme}
         setTheme={setTheme}
         themes={themes}
+        debugColorScheme={debugColorScheme}
+        setDebugColorScheme={setDebugColorScheme}
+        debugColorSchemes={debugColorSchemes}
         debuggerLayout={debuggerLayout}
         setDebuggerLayout={setDebuggerLayout}
         loadPointInput={loadPointInput}

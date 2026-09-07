@@ -40,6 +40,9 @@ export default function Header({
   theme,
   setTheme,
   themes,
+  debugColorScheme,
+  setDebugColorScheme,
+  debugColorSchemes,
   debuggerLayout,
   setDebuggerLayout,
   loadPointInput,
@@ -53,6 +56,7 @@ export default function Header({
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [themesOpen,   setThemesOpen]   = useState(false);
   const [layoutOpen,   setLayoutOpen]   = useState(false);
+  const [debugColorsOpen, setDebugColorsOpen] = useState(false);
   const settingsRef = useRef(null);
 
   /* Code Templates dropdown */
@@ -75,6 +79,7 @@ export default function Header({
         setSettingsOpen(false);
         setThemesOpen(false);
         setLayoutOpen(false);
+        setDebugColorsOpen(false);
       }
     };
     document.addEventListener('mousedown', handle);
@@ -323,6 +328,26 @@ export default function Header({
                   onClick={() => { setDebuggerLayout(l.id); setSettingsOpen(false); setLayoutOpen(false); }}
                 >
                   {l.label}
+                </button>
+              ))}
+
+              <div className={styles.dropdownDivider} />
+
+              <button
+                className={`${styles.settingsRow} ${styles.debugColorsRow}`}
+                onClick={() => setDebugColorsOpen(o => !o)}
+              >
+                <span>Debug highlight colors</span>
+                <ChevronDown size={12} style={{ transform: debugColorsOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.15s', flexShrink: 0 }} />
+              </button>
+
+              {debugColorsOpen && (debugColorSchemes || []).map(s => (
+                <button
+                  key={s.id}
+                  className={`${styles.themeItem} ${s.id === debugColorScheme ? styles.themeItemActive : ''}`}
+                  onClick={() => { setDebugColorScheme(s.id); setSettingsOpen(false); setDebugColorsOpen(false); }}
+                >
+                  {s.label}
                 </button>
               ))}
 

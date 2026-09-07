@@ -378,12 +378,18 @@
   color: var(--text);
   font-size: 0.85rem;
   font-family: inherit;
+  text-align: left;
   cursor: pointer;
   transition: background 0.1s;
 }
 
 .settingsRow:hover {
   background: var(--bg3);
+}
+
+/* Keep the debug-color section aligned with other top-level settings. */
+.debugColorsRow {
+  padding-left: 10px;
 }
 
 /* Indented option rows inside a settings sub-section */
