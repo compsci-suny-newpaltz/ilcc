@@ -230,11 +230,18 @@ function createDebugSession(sourceCode, callbacks, options = {}) {
        instruction and would produce wrong mappings if included. */
     getLineMap() {
       const map = {};
+      const loadPoint = interp.loadPoint ?? 0;
       for (const entry of assembler.listing) {
         if (entry.codeWords?.length > 0 && entry.locCtr != null && entry.lineNum != null) {
+          /* The assembler listing is image-relative (assembled at address 0),
+             while the interpreter PC is an absolute memory address after the
+             load-point relocation. Keep the map in the same address space as
+             the PC so highlighting and source-line breakpoints work at any
+             load point. */
+          const address = loadPoint + entry.locCtr;
           /* First instruction at each address wins (handles multi-pass quirks). */
-          if (!(entry.locCtr in map)) {
-            map[entry.locCtr] = entry.lineNum;
+          if (!(address in map)) {
+            map[address] = entry.lineNum;
           }
         }
       }
