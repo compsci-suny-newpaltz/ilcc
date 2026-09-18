@@ -14,7 +14,7 @@
 import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { EditorView, basicSetup } from 'codemirror';
 import { keymap, Decoration } from '@codemirror/view';
-import { StateEffect, StateField } from '@codemirror/state';
+import { Compartment, EditorState, StateEffect, StateField } from '@codemirror/state';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { tags } from '@lezer/highlight';
 import { lccLanguage } from '../../../editor/lccLanguage';
@@ -67,6 +67,7 @@ const editorHighlightStyle = HighlightStyle.define([
 const Editor = forwardRef(function Editor(props, ref) {
   const hostRef = useRef(null);   /* DOM element CodeMirror attaches to */
   const viewRef = useRef(null);   /* EditorView instance */
+  const tabSizeCompartment = useRef(new Compartment());
 
   /* Expose methods to the parent via ref */
   useImperativeHandle(ref, () => ({
@@ -126,6 +127,7 @@ const Editor = forwardRef(function Editor(props, ref) {
       doc: '',
       extensions: [
         basicSetup,
+        tabSizeCompartment.current.of(EditorState.tabSize.of(props.tabSize ?? 4)),
         lccLanguage(),
         /* Make this the primary highlighter so basicSetup's fixed default
            fallback colors do not win over the active theme palette. */
@@ -183,6 +185,12 @@ const Editor = forwardRef(function Editor(props, ref) {
       viewRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    viewRef.current?.dispatch({
+      effects: tabSizeCompartment.current.reconfigure(EditorState.tabSize.of(props.tabSize ?? 4)),
+    });
+  }, [props.tabSize]);
 
   return (
     <div className={styles.wrapper}>

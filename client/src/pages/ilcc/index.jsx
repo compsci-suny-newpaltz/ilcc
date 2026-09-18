@@ -30,6 +30,15 @@ import useShortcuts from '../../hooks/useShortcuts';
 
 export default function Ilcc() {
   const { theme, setTheme, themes } = useTheme();
+  const [tabSize, setTabSize] = useState(() => {
+    try {
+      const saved = Number(window.localStorage.getItem('ilcc.tabSize'));
+      return Number.isInteger(saved) && saved >= 2 && saved <= 12 ? saved : 4;
+    } catch { return 4; }
+  });
+  useEffect(() => {
+    try { window.localStorage.setItem('ilcc.tabSize', String(tabSize)); } catch { /* storage unavailable */ }
+  }, [tabSize]);
   const { debugColorScheme, setDebugColorScheme, debugColorSchemes } = useDebugColors();
   useTour();
   const [debuggerLayout, setDebuggerLayout] = useState('classic');
@@ -283,6 +292,8 @@ export default function Ilcc() {
         onMenuOpen={() => setMenuOpen(true)}
         onImportTemplate={handleImportTemplate}
         theme={theme}
+        tabSize={tabSize}
+        setTabSize={setTabSize}
         setTheme={setTheme}
         themes={themes}
         debugColorScheme={debugColorScheme}
@@ -300,6 +311,7 @@ export default function Ilcc() {
 
       {/* Workspace: editor, terminal, and debugger panels */}
       <Workspace
+        tabSize={tabSize}
         editorRef={editorRef}
         output={debug_session.isDebugging ? debug_session.output : runner.output}
         inputMode={debug_session.isDebugging ? debug_session.inputMode : runner.inputMode}

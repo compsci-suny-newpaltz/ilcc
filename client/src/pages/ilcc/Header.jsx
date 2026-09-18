@@ -38,6 +38,8 @@ export default function Header({
   onMenuOpen,
   onImportTemplate,
   theme,
+  tabSize = 4,
+  setTabSize,
   setTheme,
   themes,
   debugColorScheme,
@@ -276,6 +278,25 @@ export default function Header({
 
           {settingsOpen && (
             <div className={styles.dropdown}>
+              <label className={styles.settingsRow}>
+                <span>Tab size</span>
+                <input
+                  className={styles.tabSizeInput}
+                  type="number"
+                  min={2}
+                  max={12}
+                  step={1}
+                  aria-label="Tab size"
+                  title="Tab size in spaces (2–12)"
+                  defaultValue={tabSize}
+                  onChange={e => {
+                    const size = e.target.valueAsNumber;
+                    if (Number.isInteger(size) && size >= 2 && size <= 12) setTabSize(size);
+                  }}
+                  onBlur={e => { e.target.value = String(tabSize); }}
+                />
+              </label>
+              <div className={styles.dropdownDivider} />
 
               {/* Theme sub-section */}
               <button

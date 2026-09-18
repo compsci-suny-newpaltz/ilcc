@@ -70,6 +70,7 @@ import Memory from './panels/Memory';
 
 export default function Workspace({
   editorRef,
+  tabSize = 4,
   output, inputMode, onSendInput,
   debugState, memoryMap, isDebugging, iteration, loadPoint,
   tabs, activeTabId, onSwitchTab, onNewTab, onCloseTab, onRenameTab,
@@ -337,7 +338,7 @@ export default function Workspace({
                       onClose={onCloseTab}
                       onRename={onRenameTab}
                     />
-                    <Editor ref={editorRef} onBreakpointsChange={onBreakpointsChange} />
+                    <Editor ref={editorRef} tabSize={tabSize} onBreakpointsChange={onBreakpointsChange} />
                   </div>
                 </Panel>
 
