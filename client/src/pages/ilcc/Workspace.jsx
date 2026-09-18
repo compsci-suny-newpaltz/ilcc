@@ -62,6 +62,7 @@ function formatLCCAssembly(source) {
 import { Panel, Group, Separator } from 'react-resizable-panels';
 import styles from './Workspace.module.css';
 import Editor from './panels/Editor';
+import ImportFiles from './ImportFiles';
 import TabBar from './panels/TabBar';
 import Terminal from './panels/Terminal';
 import CPU from './panels/CPU';
@@ -70,6 +71,7 @@ import Memory from './panels/Memory';
 
 export default function Workspace({
   editorRef,
+  tabSize = 4,
   output, inputMode, onSendInput,
   debugState, memoryMap, isDebugging, iteration, loadPoint,
   tabs, activeTabId, onSwitchTab, onNewTab, onCloseTab, onRenameTab,
@@ -78,7 +80,7 @@ export default function Workspace({
   onBreakpointsChange,
 }) {
   const sidePanelRef       = useRef(null);
-  const fileInputRef       = useRef(null);
+  const [importOpen, setImportOpen] = useState(false);
   const [formatDone, setFormatDone] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
   const [debugTopOffset, setDebugTopOffset] = useState(0);
@@ -276,19 +278,6 @@ export default function Workspace({
                 {/* Code Editor */}
                 <Panel id="editor" minSize={300}>
                   <div className={styles.pane}>
-                    {/* Hidden file input for importing .a files */}
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      multiple
-                      accept=".a"
-                      style={{ display: 'none' }}
-                      onChange={e => {
-                        const files = Array.from(e.target.files);
-                        if (files.length) onImportFiles(files);
-                        e.target.value = '';
-                      }}
-                    />
                     <div className={styles.paneHeader}>
                       <span>Code</span>
                       <div className={styles.paneHeaderActions}>
@@ -309,8 +298,10 @@ export default function Workspace({
                         </button>
                         <button
                           className={styles.paneActionBtn}
-                          onClick={() => fileInputRef.current.click()}
-                          title="Import .a files"
+                          onClick={() => setImportOpen(open => !open)}
+                          title="Import files"
+                          aria-label="Import files"
+                          aria-expanded={importOpen}
                         >
                           <Upload size={14} />
                         </button>
@@ -323,6 +314,7 @@ export default function Workspace({
                         </button>
                       </div>
                     </div>
+                    {importOpen && <ImportFiles tabSize={tabSize} onImportFiles={onImportFiles} onClose={() => setImportOpen(false)} />}
                     {formatDone && (
                       <div className={styles.shareBanner}>Code formatted!</div>
                     )}
@@ -337,7 +329,7 @@ export default function Workspace({
                       onClose={onCloseTab}
                       onRename={onRenameTab}
                     />
-                    <Editor ref={editorRef} onBreakpointsChange={onBreakpointsChange} />
+                    <Editor ref={editorRef} tabSize={tabSize} onBreakpointsChange={onBreakpointsChange} />
                   </div>
                 </Panel>
 

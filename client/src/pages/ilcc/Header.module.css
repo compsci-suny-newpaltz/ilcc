@@ -387,6 +387,16 @@
   background: var(--bg3);
 }
 
+.tabSizeInput {
+  width: 64px;
+  background: var(--bg1);
+  color: var(--text);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 3px 5px;
+  font: inherit;
+}
+
 /* Keep the debug-color section aligned with other top-level settings. */
 .debugColorsRow {
   padding-left: 10px;

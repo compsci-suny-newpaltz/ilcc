@@ -27,9 +27,19 @@ import useTheme from '../../hooks/useTheme';
 import useDebugColors from '../../hooks/useDebugColors';
 import useTour from '../../hooks/useTour';
 import useShortcuts from '../../hooks/useShortcuts';
+import { commentSource } from '../../lib/commentSource';
 
 export default function Ilcc() {
   const { theme, setTheme, themes } = useTheme();
+  const [tabSize, setTabSize] = useState(() => {
+    try {
+      const saved = Number(window.localStorage.getItem('ilcc.tabSize'));
+      return Number.isInteger(saved) && saved >= 2 && saved <= 12 ? saved : 4;
+    } catch { return 4; }
+  });
+  useEffect(() => {
+    try { window.localStorage.setItem('ilcc.tabSize', String(tabSize)); } catch { /* storage unavailable */ }
+  }, [tabSize]);
   const { debugColorScheme, setDebugColorScheme, debugColorSchemes } = useDebugColors();
   useTour();
   const [debuggerLayout, setDebuggerLayout] = useState('classic');
@@ -157,16 +167,22 @@ export default function Ilcc() {
     } catch { /* ignore malformed codes */ }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /* ── Import: read selected .a files and open each as a new tab ── */
-  const handleImportFiles = async (files) => {
-    flushActiveTab();
+  /* Read assembly or convert source files, then open each in a new tab. */
+  const handleImportFiles = async (files, sourceOptions = null) => {
+    if (!files.length) return;
     const newTabs = await Promise.all(
-      files.map(async (file) => ({
-        id: `tab-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-        name: file.name,
-        content: await file.text(),
-      }))
+      files.map(async (file) => {
+        const text = await file.text();
+        const document = sourceOptions
+          ? commentSource(file.name, text, sourceOptions)
+          : { name: file.name, content: text };
+        return { id: `tab-${Date.now()}-${Math.random().toString(36).slice(2)}`, ...document };
+      })
     );
+    // Preserve edits made while the files were being read.
+    flushActiveTab();
+    runner.reset();
+    debug_session.stop();
     setTabs(prev => [...prev, ...newTabs]);
     const first = newTabs[0];
     setActiveTabId(first.id);
@@ -283,6 +299,8 @@ export default function Ilcc() {
         onMenuOpen={() => setMenuOpen(true)}
         onImportTemplate={handleImportTemplate}
         theme={theme}
+        tabSize={tabSize}
+        setTabSize={setTabSize}
         setTheme={setTheme}
         themes={themes}
         debugColorScheme={debugColorScheme}
@@ -300,6 +318,7 @@ export default function Ilcc() {
 
       {/* Workspace: editor, terminal, and debugger panels */}
       <Workspace
+        tabSize={tabSize}
         editorRef={editorRef}
         output={debug_session.isDebugging ? debug_session.output : runner.output}
         inputMode={debug_session.isDebugging ? debug_session.inputMode : runner.inputMode}

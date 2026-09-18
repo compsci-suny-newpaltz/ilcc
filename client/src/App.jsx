@@ -14,6 +14,7 @@ const Materials   = lazy(() => import('./pages/materials'));
 const Examples    = lazy(() => import('./pages/examples'));
 const MySubs      = lazy(() => import('./pages/my-submissions'));
 const Autograder  = lazy(() => import('./pages/autograder'));
+const Labs        = lazy(() => import('./pages/labs'));
 
 /* The app is served under a URL prefix in production (/ilcc). Vite bakes it
    into import.meta.env.BASE_URL from VITE_BASE; strip the trailing slash for
@@ -38,6 +39,7 @@ export default function App() {
               <Route path="/materials" element={<RequireRole role="sso"><Materials /></RequireRole>} />
               <Route path="/my-submissions" element={<RequireRole role="sso"><MySubs /></RequireRole>} />
               <Route path="/autograder/*" element={<RequireRole role="ta"><Autograder /></RequireRole>} />
+              <Route path="/labs" element={<RequireRole role="admin"><Labs /></RequireRole>} />
               {/* Legacy deep link from the student-pod era. */}
               <Route path="/ilcc" element={<Navigate to="/" replace />} />
               <Route path="*" element={<Navigate to="/" replace />} />
