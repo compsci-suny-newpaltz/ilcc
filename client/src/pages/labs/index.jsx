@@ -4,6 +4,7 @@ import ps from '../../components/Page.module.css';
 import styles from './Labs.module.css';
 import { api } from '../../lib/api';
 import { textbookSources, textbookChapters } from '../../data/textbookSources';
+import { Plus, Pencil, FileCode2, ArrowUp, ArrowDown, X, BookOpen, Save } from 'lucide-react';
 
 function LabForm({ lab, onSaved, onCancel }) {
   const [title, setTitle] = useState(lab?.title || '');
@@ -36,44 +37,56 @@ function LabForm({ lab, onSaved, onCancel }) {
   };
 
   return (
-    <form className={ps.card} onSubmit={save} aria-label="Lab configuration">
-      <h2 className={ps.h2}>{lab ? 'Edit lab' : 'New lab'}</h2>
-      {error && <p role="alert">{error}</p>}
+    <form className={`${ps.card} ${styles.form}`} onSubmit={save} aria-label="Lab configuration">
+      <div className={styles.formHead}>
+        <h2><BookOpen size={18} />{lab ? 'Edit lab' : 'New lab'}</h2>
+        <span className={`${ps.badge} ${isPublished ? ps.badgeOk : ''}`}>{isPublished ? 'Published' : 'Draft'}</span>
+      </div>
+      {error && <p className={styles.error} role="alert">{error}</p>}
       <fieldset className={styles.fields} disabled={busy}>
         <label className={ps.label} htmlFor="lab-title">Lab name</label>
         <input id="lab-title" className={ps.input} required maxLength={200} value={title} onChange={e => setTitle(e.target.value)} />
         <label className={ps.label} htmlFor="lab-instructions">Instructions (optional)</label>
         <textarea id="lab-instructions" className={ps.textarea} maxLength={20000} value={instructions} onChange={e => setInstructions(e.target.value)} />
+        <div className={styles.fileColumns}>
+        <section className={styles.fileSection} aria-label="Textbook catalog">
+        <h3>Textbook sources</h3>
         <label className={ps.label} htmlFor="lab-chapter">Choose textbook files by chapter</label>
         <select id="lab-chapter" className={ps.select} value={chapter} onChange={e => setChapter(e.target.value)}>
           {textbookChapters.map(number => <option key={number} value={number}>Chapter {number}</option>)}
         </select>
         <div className={styles.catalog}>
           {textbookSources.filter(source => source.chapter === Number(chapter)).map(source => (
-            <label key={source.name}>
+            <label className={styles.sourceOption} key={source.name}>
               <input type="checkbox" checked={files.includes(source.name)} onChange={e => {
                 setFiles(previous => e.target.checked ? [...previous, source.name] : previous.filter(name => name !== source.name));
-              }} /> {source.name}
+              }} /> <FileCode2 size={14} />{source.name}
             </label>
           ))}
         </div>
-        <h3 className={ps.h3}>Selected files — opening order</h3>
-        {!files.length && <p>Select at least one file. Files can come from multiple chapters.</p>}
+        <p className={`${ps.small} ${ps.muted}`}>Select files from one or more chapters.</p>
+        </section>
+        <section className={styles.fileSection} aria-label="Selected sources">
+        <h3>Selected files <span className={ps.badge}>{files.length}</span></h3>
+        <p className={`${ps.small} ${ps.muted}`}>Students receive files in this order.</p>
+        {!files.length && <div className={styles.emptySelection}><FileCode2 size={24} /><p>Select at least one textbook file.</p></div>}
         <ol className={styles.selected}>
           {files.map((name, index) => <li key={name}>
-            <span>{name} → {name.replace(/\.c$/, '.a')}</span>
+            <span className={styles.fileName}>{name}<small>→ {name.replace(/\.c$/, '.a')}</small></span>
             <div className={styles.actions}>
-              <button type="button" className={ps.btn} disabled={index === 0} aria-label={`Move ${name} up`} onClick={() => move(index, -1)}>↑</button>
-              <button type="button" className={ps.btn} disabled={index === files.length - 1} aria-label={`Move ${name} down`} onClick={() => move(index, 1)}>↓</button>
-              <button type="button" className={ps.btn} aria-label={`Remove ${name}`} onClick={() => setFiles(previous => previous.filter(file => file !== name))}>Remove</button>
+              <button type="button" className={`${ps.btn} ${styles.iconBtn}`} disabled={index === 0} title="Move up" aria-label={`Move ${name} up`} onClick={() => move(index, -1)}><ArrowUp size={14} /></button>
+              <button type="button" className={`${ps.btn} ${styles.iconBtn}`} disabled={index === files.length - 1} title="Move down" aria-label={`Move ${name} down`} onClick={() => move(index, 1)}><ArrowDown size={14} /></button>
+              <button type="button" className={`${ps.btn} ${styles.iconBtn}`} title="Remove file" aria-label={`Remove ${name}`} onClick={() => setFiles(previous => previous.filter(file => file !== name))}><X size={14} /></button>
             </div>
           </li>)}
         </ol>
+        </section>
+        </div>
         <label className={styles.publish}><input type="checkbox" checked={isPublished} onChange={e => setPublished(e.target.checked)} /> Published — available to students</label>
         <p className={ps.muted}>Uncheck to save as a draft. Changes apply when students next import the lab.</p>
-        <div className={styles.actions}>
+        <div className={styles.formFooter}>
           <button type="button" className={ps.btn} onClick={onCancel}>Cancel</button>
-          <button type="submit" className={ps.btnPrimary} disabled={!title.trim() || !files.length}>{busy ? 'Saving…' : 'Save lab'}</button>
+          <button type="submit" className={ps.btnPrimary} disabled={!title.trim() || !files.length}><Save size={14} />{busy ? 'Saving…' : 'Save lab'}</button>
         </div>
       </fieldset>
     </form>
@@ -97,19 +110,22 @@ export default function Labs() {
   };
 
   return (
-    <Page title="Lab Configuration" subtitle="Choose textbook sources, set their opening order, and publish labs for students." wide>
-      {error && <p role="alert">{error}</p>}
-      {labs === null && !error && <p>Loading labs…</p>}
+    <Page title="Lab Configuration" subtitle="Choose textbook sources, set their opening order, and publish labs for students." wide
+      actions={<button className={ps.btnPrimary} onClick={() => setEditing({})} disabled={!labs || editing !== null}><Plus size={14} />New lab</button>}>
+      {error && <p className={styles.error} role="alert">{error}</p>}
+      {labs === null && !error && <div className={ps.empty}><span className={ps.spinner} /> Loading labs…</div>}
       {labs && <>
-        <button className={ps.btnPrimary} onClick={() => setEditing({})} disabled={editing !== null}>New lab</button>
         {editing !== null && <LabForm key={editing.id || 'new'} lab={editing.id ? editing : null} onSaved={saved} onCancel={() => setEditing(null)} />}
-        {!labs.length && <p>No labs yet. Create a lab and select its textbook files.</p>}
-        {labs.map(lab => <div key={lab.id} className={`${ps.card} ${ps.cardRow}`}>
-          <div><strong>{lab.title}</strong> <span className={ps.badge}>{lab.isPublished ? 'Published' : 'Draft'}</span>
-            <p className={ps.muted}>{lab.files.length} files: {lab.files.join(', ')}</p>
+        {!labs.length && editing === null && <div className={`${ps.card} ${ps.empty}`}><BookOpen size={32} /><p className={ps.p}><strong>No labs yet</strong></p><p className={ps.muted}>Create a lab and select its textbook files. Published labs appear in the editor’s Import menu.</p></div>}
+        <div className={styles.labList}>
+        {labs.map(lab => <div key={lab.id} className={`${ps.card} ${styles.labCard}`}>
+          <div className={styles.labSummary}><div className={styles.labTitle}><BookOpen size={17} /><strong>{lab.title}</strong> <span className={`${ps.badge} ${lab.isPublished ? ps.badgeOk : ''}`}>{lab.isPublished ? 'Published' : 'Draft'}</span></div>
+            <p className={`${ps.small} ${ps.muted}`}>{lab.files.length} {lab.files.length === 1 ? 'file' : 'files'}</p>
+            <div className={styles.fileChips}>{lab.files.map(name => <span className={ps.code} key={name}>{name}</span>)}</div>
           </div>
-          <button className={ps.btn} disabled={editing !== null} onClick={() => setEditing(lab)}>Edit</button>
+          <button className={ps.btn} disabled={editing !== null} onClick={() => setEditing(lab)}><Pencil size={13} />Edit</button>
         </div>)}
+        </div>
       </>}
     </Page>
   );

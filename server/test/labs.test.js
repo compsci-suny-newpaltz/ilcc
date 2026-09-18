@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
-import { get, post, put, ADMIN, STUDENT, as } from './helpers.js';
+import { get, post, put, ADMIN, STUDENT, FACULTY, as } from './helpers.js';
 
 describe('lab configuration API', () => {
   let id;
@@ -12,13 +12,15 @@ describe('lab configuration API', () => {
     expect(require('../src/textbookSources.json')).toEqual(files);
   });
 
-  it('requires sign-in for labs and admin role for management', async () => {
+  it('requires sign-in for labs and a registered staff role for management', async () => {
     expect((await get('/api/labs')).status).toBe(401);
     expect((await get('/api/labs/admin', STUDENT)).status).toBe(403);
     expect((await post('/api/labs/admin', draft, STUDENT)).status).toBe(403);
-    // A TA has access to grading but cannot manage labs.
+    // Registered TAs share the same management access as the autograder.
     await post('/api/staff', { email: 'labta@newpaltz.edu', role: 'ta' }, ADMIN);
-    expect((await post('/api/labs/admin', draft, as('labta@newpaltz.edu'))).status).toBe(403);
+    expect((await get('/api/labs/admin', as('labta@newpaltz.edu'))).status).toBe(200);
+    expect((await get('/api/labs/admin', as('unregisteredta@newpaltz.edu', 'ta'))).status).toBe(403);
+    expect((await get('/api/labs/admin', { 'X-Hydra-Email': 'prof@newpaltz.edu', 'X-Hydra-Roles': 'faculty' })).status).toBe(401);
   });
 
   it('saves a draft and its order without exposing it in student reads', async () => {
@@ -54,5 +56,18 @@ describe('lab configuration API', () => {
     await put(`/api/labs/admin/${id}`, { ...changed, isPublished: false }, ADMIN);
     expect((await get(`/api/labs/${id}`, STUDENT)).status).toBe(404);
     expect((await get('/api/labs', STUDENT)).body).toEqual([]);
+  });
+
+  it('lets SSO faculty and registered TAs create and modify labs', async () => {
+    const created = await post('/api/labs/admin', draft, FACULTY);
+    expect(created.status).toBe(201);
+    expect(created.body.createdBy).toBe('prof@newpaltz.edu');
+    const changed = { ...draft, title: 'Lab revised by TA', isPublished: true };
+    const updated = await put(`/api/labs/admin/${created.body.id}`, changed, as('labta@newpaltz.edu'));
+    expect(updated.status).toBe(200);
+    expect(updated.body).toMatchObject(changed);
+    const taCreated = await post('/api/labs/admin', draft, as('labta@newpaltz.edu'));
+    expect(taCreated.status).toBe(201);
+    expect(taCreated.body.createdBy).toBe('labta@newpaltz.edu');
   });
 });

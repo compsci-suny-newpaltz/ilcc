@@ -4,7 +4,7 @@ Browser-based assembler, interpreter, and step debugger for the **LCC** (Low Cos
 
 Also serves the course software downloads (SSO) and a TA autograder (SSO + staff role).
 
-Admins can manage **Lab Configuration** from their account menu: name a lab,
+Professors and registered TAs can manage **Lab Configuration** from their account menu: name a lab,
 add instructions, choose and order textbook sources, and save it as a draft or
 publish it. Signed-in students use the editor's **Import → Lab** option to open
 published labs as commented `.a` tabs. Lab configurations live in SQLite;
@@ -14,6 +14,8 @@ lab affect subsequent imports and do not alter existing editor tabs.
 Original textbook sources live in `client/src/data/textbook/`. When adding or
 removing source files, update `server/src/textbookSources.json`, the API's filename
 allowlist. The server tests verify that this list matches the bundled sources.
+Faculty SSO affiliations automatically grant admin access. TAs must first be
+added by an admin through the account menu → Staff, as with the autograder.
 
 ## Layout
 

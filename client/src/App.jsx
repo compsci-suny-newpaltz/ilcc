@@ -39,7 +39,7 @@ export default function App() {
               <Route path="/materials" element={<RequireRole role="sso"><Materials /></RequireRole>} />
               <Route path="/my-submissions" element={<RequireRole role="sso"><MySubs /></RequireRole>} />
               <Route path="/autograder/*" element={<RequireRole role="ta"><Autograder /></RequireRole>} />
-              <Route path="/labs" element={<RequireRole role="admin"><Labs /></RequireRole>} />
+              <Route path="/labs" element={<RequireRole role="ta"><Labs /></RequireRole>} />
               {/* Legacy deep link from the student-pod era. */}
               <Route path="/ilcc" element={<Navigate to="/" replace />} />
               <Route path="*" element={<Navigate to="/" replace />} />
