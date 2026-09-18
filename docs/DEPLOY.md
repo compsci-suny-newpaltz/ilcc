@@ -34,6 +34,18 @@ The script: pulls this repo to `/home/infra/web_ilcc`, `buildah bud --build-arg 
 - Faculty (SAML affiliation) become admins on first sign-in; `SEED_ADMINS` adds explicit ones; admins add TAs in the app (User menu → Staff).
 - The IngressRoute rule **must be one line** — Traefik v3 rejects YAML folded blocks and silently disables the router.
 
+### Lab configuration
+
+The lab feature adds `/labs` (admin configuration page) and `/api/labs` (signed-in
+student reads plus admin writes under `/api/labs/admin`). When deploying, ensure
+both `/ilcc/labs` and `/ilcc/api/labs` use the SSO middleware and proxy-secret
+middleware in the external IngressRoute. Express enforces admin permissions for
+configuration and returns only published labs to students. The manifests live
+in `hydra-saml-auth`, outside this repository.
+
+Migration `003_labs.sql` creates the lab table automatically at startup on the
+existing SQLite data volume; it requires no manual database changes.
+
 ## Data safety
 
 Both PVCs are `hydra-local` with `reclaimPolicy: Delete`. **Never `kubectl delete pvc`.** Pin the PVs to Retain after first bind (see `k8s/components/ilcc/README.md`). The CronJob keeps 14 nightly `.db.gz` backups on `ilcc-data`; copy them off-node periodically:

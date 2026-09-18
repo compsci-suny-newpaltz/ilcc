@@ -33,3 +33,14 @@
 .actions { display: flex; justify-content: flex-end; gap: 8px; }
 .panel button { cursor: pointer; }
 .panel button:disabled { opacity: 0.5; cursor: default; }
+
+.sourceList {
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  margin: 8px 0;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.sourceList label { margin: 4px 0; }
+.instructions { white-space: pre-wrap; overflow-wrap: anywhere; }

@@ -1,0 +1,7 @@
+.fields { border: 0; padding: 0; margin: 0; min-width: 0; }
+.catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin: 12px 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.selected { padding-left: 24px; }
+.selected li { margin: 8px 0; }
+.selected li > span { display: inline-block; margin-bottom: 5px; }
+.publish { display: flex; align-items: center; gap: 8px; margin: 16px 0; }
