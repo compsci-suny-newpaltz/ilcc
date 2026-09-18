@@ -56,7 +56,7 @@ it('shows published lab instructions and imports the latest files in the configu
   expect(screen.getByText(lab.instructions)).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Open lab files' }));
   await waitFor(() => expect(onClose).toHaveBeenCalledOnce());
-  expect(api).toHaveBeenLastCalledWith('/labs/3');
+  expect(api).toHaveBeenLastCalledWith('/grader/labs/3');
   const [files, options] = onImportFiles.mock.calls[0];
   expect(files.map(file => file.name)).toEqual(['c0607.c', 'c0605.c']);
   expect(await files[0].text()).toBe(textbookSources.find(file => file.name === 'c0607.c').content);

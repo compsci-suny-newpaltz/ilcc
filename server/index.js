@@ -51,6 +51,10 @@ app.use('/api',             require('./src/routes/health'));
 app.use('/api/me',          require('./src/routes/me'));
 app.use('/api/demos',       require('./src/routes/demos'));
 app.use('/api/labs',        require('./src/routes/labs'));
+// Reuse the existing SSO-protected ingress prefix. The lab router handles
+// published student reads and enforces staff roles on management routes.
+// Mount before the general grader staff gate so students can import labs.
+app.use('/api/grader/labs', require('./src/routes/labs'));
 app.use('/api/downloads',   require('./src/routes/downloads'));
 app.use('/api/materials',   require('./src/routes/materials'));
 app.use('/api/staff',       requireRole('admin'), require('./src/routes/staff'));

@@ -26,7 +26,7 @@ export default function ImportFiles({ tabSize, onImportFiles, onClose }) {
   useEffect(() => {
     if (mode !== 'lab') return;
     let active = true;
-    api('/labs').then(rows => {
+    api('/grader/labs').then(rows => {
       if (!active) return;
       setLabs(rows);
       setLabsError(null);
@@ -46,7 +46,7 @@ export default function ImportFiles({ tabSize, onImportFiles, onClose }) {
         : files;
       if (mode === 'lab') {
         // Recheck publication and use the latest configuration at import time.
-        const lab = await api(`/labs/${labId}`);
+        const lab = await api(`/grader/labs/${labId}`);
         imports = lab.files.map(name => {
           const source = textbookSources.find(item => item.name === name);
           if (!source) throw new Error(`The source ${name} is unavailable. Please reload the site and try again.`);

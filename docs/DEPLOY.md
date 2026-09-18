@@ -36,12 +36,19 @@ The script: pulls this repo to `/home/infra/web_ilcc`, `buildah bud --build-arg 
 
 ### Lab configuration
 
-The lab feature adds `/labs` (staff configuration page) and `/api/labs` (signed-in
-student reads plus staff writes under `/api/labs/admin`). When deploying, ensure
-both `/ilcc/labs` and `/ilcc/api/labs` use the SSO middleware and proxy-secret
-middleware in the external IngressRoute. Express enforces TA-or-admin permissions for
-configuration and returns only published labs to students. The manifests live
-in `hydra-saml-auth`, outside this repository.
+The staff configuration page is `/labs`. The client calls `/api/grader/labs`
+for published labs and `/api/grader/labs/admin` for staff management. These
+requests reuse the existing SSO-protected `/ilcc/api/grader` IngressRoute, with
+forward-auth followed by the proxy-secret middleware. No separate API prefix
+needs to be added for the current client. The original `/api/labs` endpoints
+remain available for older clients, but need their own SSO routing if used.
+
+Express mounts the lab router before the general autograder staff gate. The lab
+router requires campus SSO for all requests, returns only published labs to
+students, and requires TA-or-admin access for management. All other grader
+endpoints retain their staff-only permissions. The page's React role guard and
+`/api/me` use the existing sign-in flow. Optional protection of `/ilcc/labs`
+itself can be added to the external IngressRoute like `/ilcc/autograder`.
 
 Use the existing `/login?returnTo=...` flow for staff sign-in, preserving the
 `/ilcc/labs` destination. Faculty affiliation promotes professors to admin on
@@ -51,6 +58,17 @@ menu, and management API all use the same staff role check as the autograder.
 
 Migration `003_labs.sql` creates the lab table automatically at startup on the
 existing SQLite data volume; it requires no manual database changes.
+
+If `/api/me` identifies a signed-in user but a lab request returns 401, verify
+that the request is to `/ilcc/api/grader/labs/...` and that its IngressRoute
+passes `X-Hydra-Email` and the proxy secret. A 403 indicates insufficient staff
+permissions; a 401 indicates missing trusted identity or an expired session.
+The app never trusts browser-supplied identity headers or bypasses role checks.
+
+The web manifest and icons are linked using Vite's configured base URL, so
+`/ilcc`, `/ilcc/`, and nested pages all request `/ilcc/site.webmanifest`. A
+manifest syntax error at the first character often means that the response is
+an HTML page instead of JSON. Check the requested URL and response content type.
 
 ## Data safety
 

@@ -22,7 +22,7 @@ it('creates an ordered published lab from files in multiple chapters', async () 
   await user.click(screen.getByLabelText('Published — available to students'));
   await user.click(screen.getByRole('button', { name: 'Save lab' }));
   await waitFor(() => expect(screen.queryByRole('form', { name: 'Lab configuration' })).not.toBeInTheDocument());
-  expect(api).toHaveBeenLastCalledWith('/labs/admin', {
+  expect(api).toHaveBeenLastCalledWith('/grader/labs/admin', {
     method: 'POST', body: { title: 'Pointers lab', instructions: 'Translate these files.', files: ['c0605.c', 'c0401.c'], isPublished: true },
   });
   expect(screen.getByText('Published')).toBeInTheDocument();
@@ -37,5 +37,21 @@ it('edits a published lab and saves it as a draft', async () => {
   await user.click(screen.getByLabelText('Published — available to students'));
   await user.click(screen.getByRole('button', { name: 'Save lab' }));
   await screen.findByText('Draft');
-  expect(api).toHaveBeenLastCalledWith('/labs/admin/2', { method: 'PUT', body: { title: 'Lab 6', instructions: '', files: ['c0605.c'], isPublished: false } });
+  expect(api).toHaveBeenLastCalledWith('/grader/labs/admin/2', { method: 'PUT', body: { title: 'Lab 6', instructions: '', files: ['c0605.c'], isPublished: false } });
+});
+
+it('offers the existing SSO login on a 401 and reloads labs when retried', async () => {
+  const user = userEvent.setup();
+  window.history.replaceState({}, '', '/labs');
+  vi.mocked(api).mockRejectedValueOnce(Object.assign(new Error('sso_required'), { status: 401 }))
+    .mockResolvedValueOnce([]);
+  render(<Labs />);
+  expect(await screen.findByRole('alert')).toHaveTextContent('Sign in again');
+  expect(screen.getByRole('link', { name: 'Sign in with SUNY SSO' })).toHaveAttribute('href', '/login?returnTo=%2Flabs');
+  await user.click(screen.getByRole('button', { name: 'Retry' }));
+  await screen.findByText('No labs yet');
+  expect(api).toHaveBeenNthCalledWith(1, '/grader/labs/admin');
+  expect(api).toHaveBeenNthCalledWith(2, '/grader/labs/admin');
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  window.history.replaceState({}, '', '/');
 });

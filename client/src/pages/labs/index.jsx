@@ -5,6 +5,7 @@ import styles from './Labs.module.css';
 import { api } from '../../lib/api';
 import { textbookSources, textbookChapters } from '../../data/textbookSources';
 import { Plus, Pencil, FileCode2, ArrowUp, ArrowDown, X, BookOpen, Save } from 'lucide-react';
+import { loginUrl } from '../../hooks/useMe';
 
 function LabForm({ lab, onSaved, onCancel }) {
   const [title, setTitle] = useState(lab?.title || '');
@@ -28,7 +29,7 @@ function LabForm({ lab, onSaved, onCancel }) {
     setBusy(true);
     setError('');
     try {
-      const saved = await api(lab ? `/labs/admin/${lab.id}` : '/labs/admin', {
+      const saved = await api(lab ? `/grader/labs/admin/${lab.id}` : '/grader/labs/admin', {
         method: lab ? 'PUT' : 'POST', body: { title, instructions, files, isPublished },
       });
       onSaved(saved);
@@ -96,12 +97,13 @@ function LabForm({ lab, onSaved, onCancel }) {
 export default function Labs() {
   const [labs, setLabs] = useState(null);
   const [editing, setEditing] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(null);
+  const [retry, setRetry] = useState(0);
   useEffect(() => {
     let active = true;
-    api('/labs/admin').then(rows => { if (active) setLabs(rows); }).catch(err => { if (active) setError(err.message); });
+    api('/grader/labs/admin').then(rows => { if (active) setLabs(rows); }).catch(err => { if (active) setError(err); });
     return () => { active = false; };
-  }, []);
+  }, [retry]);
 
   const saved = lab => {
     setLabs(previous => previous.some(row => row.id === lab.id)
@@ -112,7 +114,11 @@ export default function Labs() {
   return (
     <Page title="Lab Configuration" subtitle="Choose textbook sources, set their opening order, and publish labs for students." wide
       actions={<button className={ps.btnPrimary} onClick={() => setEditing({})} disabled={!labs || editing !== null}><Plus size={14} />New lab</button>}>
-      {error && <p className={styles.error} role="alert">{error}</p>}
+      {error && <div className={styles.error} role="alert">
+        <p>{error.status === 401 ? 'Your sign-in session is unavailable. Sign in again, then retry.' : error.message}</p>
+        {error.status === 401 && <a className={ps.btnPrimary} href={loginUrl()}>Sign in with SUNY SSO</a>}
+        <button className={ps.btn} onClick={() => { setError(null); setRetry(value => value + 1); }}>Retry</button>
+      </div>}
       {labs === null && !error && <div className={ps.empty}><span className={ps.spinner} /> Loading labs…</div>}
       {labs && <>
         {editing !== null && <LabForm key={editing.id || 'new'} lab={editing.id ? editing : null} onSaved={saved} onCancel={() => setEditing(null)} />}
