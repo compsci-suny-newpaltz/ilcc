@@ -1,0 +1,35 @@
+.panel {
+  padding: 12px;
+  background: var(--bg2);
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  overflow: auto;
+  max-height: 45vh;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+.panel label {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.panel input, .panel select, .panel button {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg1);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 5px 8px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.panel input[type='number'] { width: 80px; }
+.panel p { margin: 8px 0; color: var(--text2); }
+.actions { display: flex; justify-content: flex-end; gap: 8px; }
+.panel button { cursor: pointer; }
+.panel button:disabled { opacity: 0.5; cursor: default; }

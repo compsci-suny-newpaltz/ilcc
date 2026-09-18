@@ -27,6 +27,7 @@ import useTheme from '../../hooks/useTheme';
 import useDebugColors from '../../hooks/useDebugColors';
 import useTour from '../../hooks/useTour';
 import useShortcuts from '../../hooks/useShortcuts';
+import { commentSource } from '../../lib/commentSource';
 
 export default function Ilcc() {
   const { theme, setTheme, themes } = useTheme();
@@ -166,16 +167,22 @@ export default function Ilcc() {
     } catch { /* ignore malformed codes */ }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /* ── Import: read selected .a files and open each as a new tab ── */
-  const handleImportFiles = async (files) => {
-    flushActiveTab();
+  /* Read assembly or convert source files, then open each in a new tab. */
+  const handleImportFiles = async (files, sourceOptions = null) => {
+    if (!files.length) return;
     const newTabs = await Promise.all(
-      files.map(async (file) => ({
-        id: `tab-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-        name: file.name,
-        content: await file.text(),
-      }))
+      files.map(async (file) => {
+        const text = await file.text();
+        const document = sourceOptions
+          ? commentSource(file.name, text, sourceOptions)
+          : { name: file.name, content: text };
+        return { id: `tab-${Date.now()}-${Math.random().toString(36).slice(2)}`, ...document };
+      })
     );
+    // Preserve edits made while the files were being read.
+    flushActiveTab();
+    runner.reset();
+    debug_session.stop();
     setTabs(prev => [...prev, ...newTabs]);
     const first = newTabs[0];
     setActiveTabId(first.id);
