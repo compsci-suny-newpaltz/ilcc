@@ -154,6 +154,10 @@ const Editor = forwardRef(function Editor(props, ref) {
           '.cm-content': {
             fontFamily: '"JetBrains Mono", monospace',
             fontSize: '13px',
+            caretColor: 'var(--text)',
+          },
+          '.cm-cursor, .cm-dropCursor': {
+            borderLeftColor: 'var(--text)',
           },
           /* Gutter (line numbers) styling */
           '.cm-gutters': {
