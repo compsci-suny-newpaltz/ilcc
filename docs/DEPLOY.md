@@ -36,12 +36,18 @@ The script: pulls this repo to `/home/infra/web_ilcc`, `buildah bud --build-arg 
 
 ### Lab configuration
 
-The lab feature adds `/labs` (admin configuration page) and `/api/labs` (signed-in
-student reads plus admin writes under `/api/labs/admin`). When deploying, ensure
+The lab feature adds `/labs` (staff configuration page) and `/api/labs` (signed-in
+student reads plus staff writes under `/api/labs/admin`). When deploying, ensure
 both `/ilcc/labs` and `/ilcc/api/labs` use the SSO middleware and proxy-secret
-middleware in the external IngressRoute. Express enforces admin permissions for
+middleware in the external IngressRoute. Express enforces TA-or-admin permissions for
 configuration and returns only published labs to students. The manifests live
 in `hydra-saml-auth`, outside this repository.
+
+Use the existing `/login?returnTo=...` flow for staff sign-in, preserving the
+`/ilcc/labs` destination. Faculty affiliation promotes professors to admin on
+their first authenticated request. TAs need an entry in the app's Staff list;
+an affiliation header alone does not grant TA privileges. The UI route, account
+menu, and management API all use the same staff role check as the autograder.
 
 Migration `003_labs.sql` creates the lab table automatically at startup on the
 existing SQLite data volume; it requires no manual database changes.

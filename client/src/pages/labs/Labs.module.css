@@ -1,7 +1,31 @@
 .fields { border: 0; padding: 0; margin: 0; min-width: 0; }
-.catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin: 12px 0; }
-.actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.selected { padding-left: 24px; }
-.selected li { margin: 8px 0; }
-.selected li > span { display: inline-block; margin-bottom: 5px; }
-.publish { display: flex; align-items: center; gap: 8px; margin: 16px 0; }
+.form { margin-bottom: 20px; }
+.formHead { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+.formHead h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 17px; font-weight: 600; }
+.fileColumns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; margin-top: 20px; }
+.fileSection { background: var(--bg1); border: 1px solid var(--border); border-radius: 8px; padding: 14px; min-width: 0; }
+.fileSection h3 { display: flex; align-items: center; gap: 8px; font-size: 14px; margin: 0 0 10px; }
+.catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; margin: 12px 0; }
+.sourceOption { display: flex; align-items: center; gap: 8px; padding: 9px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg2); font-family: 'JetBrains Mono', monospace; font-size: 12px; cursor: pointer; }
+.sourceOption:hover { border-color: var(--accent); }
+.sourceOption:has(input:checked) { border-color: var(--accent); background: var(--bg3); }
+.sourceOption input, .publish input { margin: 0; accent-color: var(--accent); }
+.actions { display: flex; gap: 4px; flex-shrink: 0; }
+.iconBtn { padding: 6px; }
+.selected { padding: 0; margin: 12px 0; list-style: none; }
+.selected li { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 8px 0; padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg2); }
+.fileName { display: flex; flex-direction: column; gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.fileName small { color: var(--text2); }
+.publish { display: flex; align-items: center; gap: 8px; margin: 20px 0 8px; font-size: 13.5px; cursor: pointer; }
+.formFooter { display: flex; justify-content: flex-end; gap: 8px; padding-top: 14px; margin-top: 16px; border-top: 1px solid var(--border); }
+.emptySelection { display: flex; flex-direction: column; align-items: center; padding: 24px 12px; border: 1px dashed var(--border); border-radius: 6px; color: var(--text2); font-size: 13px; text-align: center; }
+.labList { display: grid; gap: 12px; }
+.labCard { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.labSummary { min-width: 0; }
+.labTitle { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.labTitle strong { overflow-wrap: anywhere; }
+.fileChips { display: flex; flex-wrap: wrap; gap: 6px; }
+.error { padding: 10px 12px; border-radius: 6px; background: color-mix(in srgb, var(--red, #e5484d) 12%, transparent); color: var(--red, #e5484d); font-size: 13px; }
+.form :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 800px) { .fileColumns { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .labCard { align-items: flex-start; } .selected li { flex-wrap: wrap; } }

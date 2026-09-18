@@ -5,7 +5,7 @@ import Labs from './index';
 import { api } from '../../lib/api';
 
 vi.mock('../../lib/api', () => ({ api: vi.fn() }));
-vi.mock('../../components/Page', () => ({ default: ({ children }) => <main>{children}</main> }));
+vi.mock('../../components/Page', () => ({ default: ({ children, actions }) => <main>{actions}{children}</main> }));
 afterEach(() => { cleanup(); vi.resetAllMocks(); });
 
 it('creates an ordered published lab from files in multiple chapters', async () => {

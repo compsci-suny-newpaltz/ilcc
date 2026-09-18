@@ -27,7 +27,7 @@ export default function RequireRole({ role = 'sso', children }) {
     return (
       <Page title="Staff only">
         <div className={ps.card}>
-          <p className={ps.p}><ShieldAlert size={16} /> Your account isn't on the staff list for this course. If you're a TA, ask the professor or an admin to add you (Help → their Staff menu).</p>
+          <p className={ps.p}><ShieldAlert size={16} /> Your account isn't on the staff list for this course. If you're a TA, ask the professor or an admin to add you through their account menu → Staff.</p>
         </div>
       </Page>
     );

@@ -60,7 +60,7 @@ export default function UserMenu() {
           <Link className={styles.item} role="menuitem" to="/my-submissions" onClick={() => setOpen(false)}><ClipboardList size={15} /> My submissions</Link>
           {isTA && <Link className={styles.item} role="menuitem" to="/autograder" onClick={() => setOpen(false)}><GraduationCap size={15} /> Autograder</Link>}
           {isAdmin && <button className={styles.item} role="menuitem" onClick={() => { setOpen(false); setStaffOpen(true); }}><Users size={15} /> Staff…</button>}
-          {isAdmin && <Link className={styles.item} role="menuitem" to="/labs" onClick={() => setOpen(false)}><ClipboardList size={15} /> Lab Configuration</Link>}
+          {isTA && <Link className={styles.item} role="menuitem" to="/labs" onClick={() => setOpen(false)}><ClipboardList size={15} /> Lab Configuration</Link>}
         </div>
       )}
       {staffOpen && <StaffModal onClose={() => setStaffOpen(false)} />}
