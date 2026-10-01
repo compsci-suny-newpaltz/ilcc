@@ -11,6 +11,12 @@ const nameHandler = { createNameFile: () => '' };
 const newline = process.platform === "win32" ? "\r\n" : "\n";
 
 const MAX_MEMORY = 65536; // 2^16
+/* LDR/STR compute 16-bit base + signed offset6 WITHOUT wrapping, like the real
+   lcc: the reachable range is -32 .. 65566. Addresses outside 0..0xffff land in
+   zero-filled slack memory (lcc indexes an oversized array), so a stack frame at
+   the top of memory — sp starts at 0, the first push wraps it to 0xffff — reads
+   zeros and never clobbers the program at mem[0]. */
+const SLACK = 32;
 
 const isTestMode = typeof global.it === "function"; // crude check for Jest
 
@@ -25,6 +31,7 @@ function fatalExit(message, code = 1) {
 class Interpreter {
 	constructor() {
 		this.mem = new Uint16Array(65536); // Memory (16-bit unsigned integers)
+		this.memSlack = new Uint16Array(2 * SLACK); // [-32..-1] then [65536..65567]
 		this.r = new Uint16Array(8); // Registers r0 to r7 (16-bit signed integers)
 		this.pc = 0; // Program Counter
 		this.ir = 0; // Instruction Register
@@ -845,18 +852,38 @@ class Interpreter {
 		this.r[this.dr] = (this.pc + this.pcoffset9) & 0xffff;
 	}
 
+	/* Data address for LDR/STR: not masked to 16 bits (see SLACK above). */
+	dataAddress() {
+		return this.r[this.baser] + this.offset6;
+	}
+
+	slackIndex(address) {
+		const i = address < 0 ? address + SLACK : SLACK + (address - MAX_MEMORY);
+		if (i < 0 || i >= 2 * SLACK) throw new Error(`Address out of bounds: ${address}`);
+		return i;
+	}
+
+	readData(address) {
+		if (address >= 0 && address < MAX_MEMORY) return this.mem[address];
+		return this.memSlack[this.slackIndex(address)];
+	}
+
+	writeData(address, value) {
+		if (address >= 0 && address < MAX_MEMORY) this.mem[address] = value;
+		else this.memSlack[this.slackIndex(address)] = value;
+	}
+
 	executeLDR() {
-		const address = (this.r[this.baser] + this.offset6) & 0xffff;
-		this.r[this.dr] = this.mem[address];
+		this.r[this.dr] = this.readData(this.dataAddress());
 	}
 
 	executeSTR() {
-		const address = (this.r[this.baser] + this.offset6) & 0xffff;
+		const address = this.dataAddress();
 		let memoryChange = {}
 		memoryChange.address = address;
-		memoryChange.old = [this.mem[address]];
-		this.mem[address] = this.r[this.sr];
-		if (address > this.memMax) this.memMax = address;
+		memoryChange.old = [this.readData(address)];
+		this.writeData(address, this.r[this.sr]);
+		if (address > this.memMax && address < MAX_MEMORY) this.memMax = address;
 		memoryChange.new = [this.r[this.sr]];
 		this.memoryChanges.push(memoryChange);
 	}

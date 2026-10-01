@@ -1,0 +1,22 @@
+        .start s
+s:      mov r1, 0
+        ld r0, val
+        str r0, r1, -1
+        ldr r2, r1, -1
+        hout r2
+        nl
+        ldr r2, r1, -32
+        hout r2
+        nl
+        ld r1, m1
+        ld r0, val2
+        str r0, r1, 3
+        ld r1, m2
+        ldr r2, r1, 2
+        hout r2
+        nl
+        halt
+val:    .word 0x1111
+val2:   .word 0x2222
+m1:     .word 0xfffe
+m2:     .word 0xffff
