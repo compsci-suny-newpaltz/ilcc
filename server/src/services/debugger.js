@@ -91,7 +91,7 @@ function createDebugSession(sourceCode, callbacks, options = {}) {
       const len  = Math.min((change.old || []).length, (change.new || []).length);
       for (let i = 0; i < len; i++) {
         cells.push({
-          addr: (base + i) & 0xffff,
+          addr: base + i,   // linear: a STR into slack past 0xffff must not alias mem[0]
           old:  change.old[i],
           new:  change.new[i],
         });

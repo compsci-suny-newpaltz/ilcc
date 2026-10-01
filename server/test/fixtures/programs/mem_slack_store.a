@@ -1,0 +1,15 @@
+        .start s
+s:      push lr
+        push fp
+        mov fp, sp
+        ld r0, val
+        str r0, fp, 2
+        ldr r1, fp, 2
+        hout r1
+        nl
+        lea r1, s
+        ldr r1, r1, 0
+        hout r1
+        nl
+        halt
+val:    .word 0x1234

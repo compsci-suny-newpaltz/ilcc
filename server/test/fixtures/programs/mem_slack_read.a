@@ -1,0 +1,20 @@
+        .start s
+s:      mov r0, sp
+        hout r0
+        nl
+        push lr
+        push fp
+        mov fp, sp
+        mov r0, fp
+        hout r0
+        nl
+        ldr r0, fp, 2
+        hout r0
+        nl
+        ldr r0, fp, 5
+        hout r0
+        nl
+        ldr r0, fp, 1
+        hout r0
+        nl
+        halt
