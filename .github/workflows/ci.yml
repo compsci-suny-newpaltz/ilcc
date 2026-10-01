@@ -65,3 +65,7 @@ jobs:
           curl -s localhost:3000/ | grep -q '/ilcc/assets/'
           test "$(curl -s -o /dev/null -w '%{http_code}' localhost:3000/api/grader/assignments)" = 401
           docker logs ilcc | tail -5
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Run programs through the shipped assembler/interpreter (/api/run)
+        run: node .github/scripts/smoke-run.mjs http://localhost:3000
