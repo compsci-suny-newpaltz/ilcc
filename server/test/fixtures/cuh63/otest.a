@@ -1,0 +1,155 @@
+; otest.a
+          lea r5, msg
+          sout r5
+          ld r5, x
+          add r5, r5, -1
+          dout r5                 ; 1
+          st r5, x
+          ld r1, x
+          add r5, r1, r1
+          dout r5                 ; 2
+          add r5, r5, r5
+          sub r5, r5, 1
+          dout r5                 ; 3
+          mvi r1, 7
+          sub r5, r1, r5
+          dout r5                 ; 4
+          mvi r1, -1
+          not r1, r1
+          add r1, r1, 1
+          add r5, r5, r1
+          dout r5                 ; 5
+          mvi r7, 255
+          and r5, r7, 6
+          dout r5                 ; 6
+          mvi r5, 255
+          mvi r2, 8
+          and r5, r5, r2
+          sub r5, r5, r1
+          dout r5                 ; 7
+          lea r1, x
+          ldr r5, r1, 1
+          dout r5                 ; 8
+          sub r5, r5, -1
+          str r5, r1, 2
+          ld r5, z
+          dout r5                 ; 9
+          mvi r1, 10
+          push r1
+          pop r5
+          dout r5                 ; 10
+          mvi r5, 22
+          srl r5
+          dout r5                 ; 11
+          mvi r5, 6
+          sll r5
+          dout r5                 ; 12
+          mvi r5, -26
+          sra r5
+          mvi r1, 0
+          sub r5, r1, r5
+          dout r5                 ; 13
+          bl sub                  ; 14
+          lea r5, sub2            ; 15
+          blr r5
+          lea r5, over1
+          jmp r5
+          halt
+over1:    mvi r5, 16
+          dout r5                 ; 16
+          sub r5, r5, -1
+          brgt over2
+          halt
+over2:    dout r5                 ; 17
+          br over3
+          halt
+over3:    mvi r5, 18
+          dout r5                 ; 18
+          mov r5, 39
+          sll r5, 3
+          srl r5, 4
+          brc over4
+          halt
+over4:    dout r5                 ; 19
+          mvi r5, 20
+          add r1, r5, r5
+          cmp r5, r1
+          brlt over5
+          halt
+over5:    mvi r0, -1
+          sra r0, 3
+          add r5, r5, r0
+          add r5, r5, 1
+          dout r5                 ; 20
+          ror r5, 7
+          rol r5, 7
+          add r1, r5, 1
+          dout r1                 ; 21
+          mul r5, r5
+          mvi r0, 20
+          div r5, r0
+          add r1, r5, 2
+          dout r1                 ; 22
+          mvi r0, 30
+          rem r5, r0
+          add r1, r5, 3
+          dout r1                 ; 23
+          sub r5, r5, 4
+          mvi r0, 4
+          or r5, r0
+          add r1, r5, 4
+          dout r1                 ; 24
+          xor r5, r0
+          add r5, r5, 4
+          add r1, r5, 5
+          dout r1                 ; 25
+          mvi r0, 128
+          or r5, r5, r0
+          mvi r0, 63
+          sext r5, r0
+          add r1, r5, 6
+          dout r1                 ; 26
+          ld r5, big
+          cmp r5, -1
+          brgt over6
+          halt
+over6:    mvi r5, 27
+          dout r5                 ; 27
+          brn over7
+          halt
+over7:    mvi r5, 28
+          dout r5                 ; 28
+          cmp r5, r5
+          bre over8
+          halt
+over8:    mvi r5, 29
+          dout r5                 ; 29
+          cmp r5, -1
+          brne over9
+          halt
+over9:    mvi r5, 30
+          dout r5                 ; 30
+          brp over10
+          halt
+over10:   mvi r5, 31              ; 31
+          dout r5
+          mov r0, r5
+          add r0, r0, 1
+          dout r0                 ; 32
+          mvr r1, r0
+          add r1, r1, 1
+          dout r1                 ; 33
+
+          nl
+          halt
+x:        .word 2
+y:        .word 8
+z:        .word -3
+big:      .word 32767
+msg:      .string "Correct if 1 to 33 displayed\n"
+sub:      mvi r5, 14              ; 14
+          dout r5
+          ret
+sub2:     mvi r5, 15
+          dout r5
+          ret
