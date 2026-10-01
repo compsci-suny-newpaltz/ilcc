@@ -1318,7 +1318,7 @@ class Assembler {
 			// compare with register
 			let sr2 = this.getRegister(sr2orImm5);
 			if (sr2 === null) return null;
-			macword = macword | (sr1 << 6) | (sr2 & 0x3);
+			macword = macword | (sr1 << 6) | (sr2 & 0x7);
 		}
 		return macword;
 	}

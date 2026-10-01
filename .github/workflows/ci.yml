@@ -67,5 +67,5 @@ jobs:
           docker logs ilcc | tail -5
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - name: Run programs through the shipped assembler/interpreter (/api/run)
+      - name: Run every cuh63 textbook program through the shipped assembler/interpreter (/api/run)
         run: node .github/scripts/smoke-run.mjs http://localhost:3000

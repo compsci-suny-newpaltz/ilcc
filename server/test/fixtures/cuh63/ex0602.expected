@@ -1,0 +1,29 @@
+Stack:
+fffb: fffe <--- fp
+fffc: 001b
+fffd: 0002
+fffe: 0000
+ffff: 0001
+2
+Stack:
+fff8: fffb <--- fp
+fff9: 0010
+fffa: 0001
+fffb: fffe
+fffc: 001b
+fffd: 0002
+fffe: 0000
+ffff: 0001
+1
+Stack:
+fff5: fff8 <--- fp
+fff6: 0010
+fff7: 0000
+fff8: fffb
+fff9: 0010
+fffa: 0001
+fffb: fffe
+fffc: 001b
+fffd: 0002
+fffe: 0000
+ffff: 0001

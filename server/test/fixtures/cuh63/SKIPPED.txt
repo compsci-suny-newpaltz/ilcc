@@ -1,0 +1,18 @@
+Programs from the cuh63 package not in this corpus, and why:
+
+datest: linker module (.extern/.global) — only assembles to .o, cannot run standalone
+ex0305: lcc timed out (waits for input or never halts)
+ex1201: linker module (.extern/.global) — only assembles to .o, cannot run standalone
+m1: linker module (.extern/.global) — only assembles to .o, cannot run standalone
+m1x: linker module (.extern/.global) — only assembles to .o, cannot run standalone
+m2: linker module (.extern/.global) — only assembles to .o, cannot run standalone
+m2x: linker module (.extern/.global) — only assembles to .o, cannot run standalone
+p0315: lcc timed out (waits for input or never halts)
+ptest: linker module (.extern/.global) — only assembles to .o, cannot run standalone
+sample: empty file
+startup: linker module (.extern/.global) — only assembles to .o, cannot run standalone
+startupx: linker module (.extern/.global) — only assembles to .o, cannot run standalone
+su: linker module (.extern/.global) — only assembles to .o, cannot run standalone
+x: linker module (.extern/.global) — only assembles to .o, cannot run standalone
+z1: linker module (.extern/.global) — only assembles to .o, cannot run standalone
+z2: linker module (.extern/.global) — only assembles to .o, cannot run standalone
